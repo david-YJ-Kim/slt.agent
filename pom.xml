@@ -10,10 +10,10 @@
   </parent>
 
   <groupId>com.tsh.slt</groupId>
-  <artifactId>stl.server</artifactId>
+  <artifactId>stl.agent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>SltServer</name>
-  <description>SLT.SEVER</description>
+  <name>SltAgent</name>
+  <description>SLT.AGENT</description>
 
 
   <properties>
