@@ -16,7 +16,7 @@ public class ApCommonController {
     @GetMapping(ApMessageList.AP_HEALTH_TEST)
     public String executeWfsAlarmReport() throws Exception {
 
-        return "Hello Word! ".concat(String.valueOf(System.currentTimeMillis()));
+        return "AGENT Hello Word! ".concat(String.valueOf(System.currentTimeMillis()));
 
     }
 }
