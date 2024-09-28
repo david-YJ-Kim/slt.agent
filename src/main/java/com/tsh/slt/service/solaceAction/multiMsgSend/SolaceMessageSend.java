@@ -2,6 +2,7 @@ package com.tsh.slt.service.solaceAction.multiMsgSend;
 
 
 import com.tsh.slt.data.ApSharedVariable;
+import com.tsh.slt.interfaces.solace.InterfaceSolacePub;
 import com.tsh.slt.service.solaceAction.multiMsgSend.vo.SlcMessageSendJobVo;
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
-@Scope("prototype")
 public class SolaceMessageSend {
 
     ApSharedVariable sharedVariable = ApSharedVariable.getInstance();
@@ -38,6 +38,8 @@ public class SolaceMessageSend {
         jobVo.setJobStartTm(System.currentTimeMillis());
         jobVo.setSrvMsgComSlcSendIvo(ivo);
 
+
+
         ArrayList<String> runningThreadList = new ArrayList<>();
 
         ScheduledExecutorService executorService = this.createScheduledExecutorService(Math.toIntExact(body.getSenderCtn()));
@@ -47,7 +49,7 @@ public class SolaceMessageSend {
             log.info("Job Start {}", threadName);
 
             Runnable task = this.taskEveryOneSecond(executorService, runningThreadList,
-                    threadName, body.getRetentionSecond(), body.getLoopSendCnt(), body.getUnitSendCnt());
+                    threadName, body.getRetentionSecond(), body.getTargetTps());
 
             executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
@@ -71,14 +73,14 @@ public class SolaceMessageSend {
      * 메시지 발송하는 실제 Task 메소드
      * 1초 마다 진행
      * @param retentionSecond
-     * @param maxLoopCnt
-     * @param maxUnitCnt
+     * @param targetTps
      * @return
      */
     private Runnable taskEveryOneSecond(ScheduledExecutorService service, ArrayList<String> runningThreadList,
-                                            String myThreadName, int retentionSecond, int maxLoopCnt, int maxUnitCnt){
+                                            String myThreadName, int retentionSecond, int targetTps){
 
         AtomicInteger invokeTime = new AtomicInteger(0);
+        Long sleepMs = this.calculateDelayTimeWithTPS(targetTps);
 
         return () -> {
 
@@ -96,7 +98,21 @@ public class SolaceMessageSend {
                 }
             }
 
-            log.info("Run Thread. name: {}, invokeTime: {}", myThreadName, invokeTime);
+
+            int unitMsgCnt = 0;
+
+            while (true){
+                unitMsgCnt ++;
+                if(unitMsgCnt == targetTps + 1){ break;}
+
+                log.info("Run Thread. name: {}, invokeTime: {} unitMsgCnt: {}", myThreadName, invokeTime, unitMsgCnt);
+
+                try {
+                    Thread.sleep(sleepMs);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
         };
     }
@@ -110,7 +126,12 @@ public class SolaceMessageSend {
      */
     private Long calculateDelayTimeWithTPS(int targetTps){
 
-        return 5000L;
+        if (targetTps <= 0) {
+            throw new IllegalArgumentException("targetTps must be greater than 0");
+        }
+
+        // 1초(1000ms)를 targetTps로 나누어 각 메시지 사이의 sleep 시간을 계산
+        return 1000L / targetTps;
     }
 
 
