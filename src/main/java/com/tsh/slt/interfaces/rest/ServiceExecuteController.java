@@ -2,8 +2,7 @@ package com.tsh.slt.interfaces.rest;
 
 
 import com.tsh.slt.interfaces.util.ApMessageList;
-import com.tsh.slt.service.messageComm.systemTest.SolaceMessageSend;
-import com.tsh.slt.service.messageComm.systemTest.vo.SlcMessageSendJobVo;
+import com.tsh.slt.service.solaceAction.multiMsgSend.SolaceMessageSend;
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +24,7 @@ public class ServiceExecuteController {
 
     @PostMapping(ApMessageList.SRV_MSG_COM_SLC_SEND)
     public ResponseEntity executeRequest(@RequestBody SrvMsgComSlcSendIvo ivo) {
+
 
         log.info(ivo.toString());
         this.solaceMessageSend.executeJob(ivo);

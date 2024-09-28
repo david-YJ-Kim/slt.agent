@@ -16,13 +16,15 @@ public class  SrvMsgComSlcSendIvo extends AbsMsgCommonVo {
     @Data
     public static class Body extends ApMsgBody{
 
-        String systemNm;      // 테스트 시스템 명
-        String testCd;         // 테스트 코드
-        int senderCtn;        // 메시지 샌드 Thread 개수
-        int loopSendCnt;      // Thread 가 loop 를 도는 개수
-        int unitSendCnt;      // 하나의 loop 에서 발송하는 unit 의 개수
-        int targetTps;        // 1초당 발송해야하는 메시지 개수
-        int retentionSecond;        // 유지시간 (초)
+        String systemNm;        // 테스트 시스템 명
+        String testCd;          // 테스트 코드
+        String sendTopicInfo;   // 토픽 발생 정보
+                                // sample: EQP(1-10),CMN(1-10)
+        int senderCtn;          // 메시지 샌드 Thread 개수, 0이면 topic 개수 만큼
+        int loopSendCnt;        // Thread 가 loop 를 도는 개수
+        int unitSendCnt;        // 하나의 loop 에서 발송하는 unit 의 개수
+        int targetTps;          // 1초당 발송해야하는 메시지 개수
+        int retentionSecond;    // 유지시간 (초)
 
     }
 

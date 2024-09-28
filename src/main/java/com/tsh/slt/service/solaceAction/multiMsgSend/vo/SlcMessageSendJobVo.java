@@ -1,4 +1,4 @@
-package com.tsh.slt.service.messageComm.systemTest.vo;
+package com.tsh.slt.service.solaceAction.multiMsgSend.vo;
 
 
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;

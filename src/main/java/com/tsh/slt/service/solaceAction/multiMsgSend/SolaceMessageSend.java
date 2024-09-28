@@ -1,8 +1,8 @@
-package com.tsh.slt.service.messageComm.systemTest;
+package com.tsh.slt.service.solaceAction.multiMsgSend;
 
 
 import com.tsh.slt.data.ApSharedVariable;
-import com.tsh.slt.service.messageComm.systemTest.vo.SlcMessageSendJobVo;
+import com.tsh.slt.service.solaceAction.multiMsgSend.vo.SlcMessageSendJobVo;
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -27,7 +27,12 @@ public class SolaceMessageSend {
     @Async
     public void executeJob(SrvMsgComSlcSendIvo ivo){
 
+
         SrvMsgComSlcSendIvo.Body body = ivo.getBody();
+
+        ArrayList<String> sendTopicList = SolaceActionUtil.getSendTopicList(body.getSystemNm(), body.getSendTopicInfo());
+
+        log.info("Target send topic list: {}", sendTopicList);
 
         SlcMessageSendJobVo jobVo = new SlcMessageSendJobVo();
         jobVo.setJobStartTm(System.currentTimeMillis());
