@@ -39,13 +39,17 @@ mybatis:
 spring:
   datasource:
     #oracle
-    #driver-class-name: oracle.jdbc.OracleDriver
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: oracle.jdbc.OracleDriver
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
-    url: jdbc:mysql://localhost:3306/mysql
+
+    url: jdbc:oracle:thin:@localhost:1521:ORCL
+#    url: jdbc:mysql://localhost:3306/mysql
     # 로컬에서 서버 URL 접속 정보로 붙지를 못함 내용 찾아봐야함
-    username: root
-    password: 1234
+#    username: root
+#    password: 1234
+    username: mesadm
+    password: absolics12#
 
     hikari:
       minimum-idle: 5

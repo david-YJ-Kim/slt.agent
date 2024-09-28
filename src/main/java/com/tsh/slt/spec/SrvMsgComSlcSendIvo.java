@@ -1,0 +1,29 @@
+package com.tsh.slt.spec;
+
+import com.tsh.slt.interfaces.util.ApMessageList;
+import com.tsh.slt.spec.common.AbsMsgCommonVo;
+import com.tsh.slt.spec.common.ApMsgBody;
+import com.tsh.slt.spec.common.ApMsgCommonVo;
+import lombok.Data;
+
+@Data
+public class  SrvMsgComSlcSendIvo extends AbsMsgCommonVo {
+
+    public static String cid = ApMessageList.SRV_MSG_COM_SLC_SEND;
+
+    Body body;
+
+    @Data
+    public static class Body extends ApMsgBody{
+
+        String systemNm;      // 테스트 시스템 명
+        String testCd;         // 테스트 코드
+        int senderCtn;        // 메시지 샌드 Thread 개수
+        int loopSendCnt;      // Thread 가 loop 를 도는 개수
+        int unitSendCnt;      // 하나의 loop 에서 발송하는 unit 의 개수
+        int targetTps;        // 1초당 발송해야하는 메시지 개수
+        int retentionSecond;        // 유지시간 (초)
+
+    }
+
+}

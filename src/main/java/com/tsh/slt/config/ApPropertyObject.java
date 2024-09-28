@@ -1,7 +1,11 @@
 package com.tsh.slt.config;
 
 
+import com.tsh.slt.interfaces.solace.InterfaceSolacePub;
+import com.tsh.slt.interfaces.solace.InterfaceSolaceSub;
+import com.tsh.slt.util.ApCommonUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -17,13 +21,24 @@ public class ApPropertyObject {
     @Value("${ap.info.group}")
     private String groupName;
 
-//    private InterfaceSolaceSub interfaceSolaceSub;
-//
-//    private InterfaceSolacePub interfaceSolacePub;
+    @Value("${ap.info.site}")
+    private String siteName;
 
+    @Value("${ap.info.env}")
+    private String envType;
 
+    @Value("${ap.info.sequence}")
+    private String processSeq;
 
+    @Setter
+    private InterfaceSolaceSub interfaceSolaceSub;
 
+    @Setter
+    private InterfaceSolacePub interfaceSolacePub;
+
+    private String clientName;
+
+    @Getter
     private static ApPropertyObject instance;
 
     // Public method to get the Singleton instance
@@ -37,36 +52,17 @@ public class ApPropertyObject {
             }
         }
 
-//        if(instance.clientName == null){
-//            instance.clientName = FisCommonUtil.generateClientName(instance.groupName, instance.siteName, instance.envType, instance.processSeq);
-//        }
-//
-//        if(instance.sequenceManager == null){
-//            try {
-//                instance.sequenceManager = new SequenceManager(instance.groupName, instance.siteName, instance.envType,
-//                        instance.seqRulePath, instance.seqRuleName);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//        }
+        if(instance.clientName == null){
+            instance.clientName = ApCommonUtil.generateClientName(instance.groupName, instance.siteName, instance.envType, instance.processSeq);
+        }
+
 
         return instance;
     }
 
-    public static ApPropertyObject getInstance(){
-        return instance;
-    }
     public ApPropertyObject(Environment env) {
         this.env = env;
         instance = this;
     }
 
-//    public void setInterfaceSolaceSub(InterfaceSolaceSub interfaceSolaceSub) {
-//        this.interfaceSolaceSub = interfaceSolaceSub;
-//    }
-//
-//    public void setInterfaceSolacePub(InterfaceSolacePub interfaceSolacePub) {
-//        this.interfaceSolacePub = interfaceSolacePub;
-//    }
 }
