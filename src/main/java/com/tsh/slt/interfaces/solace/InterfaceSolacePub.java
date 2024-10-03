@@ -29,10 +29,10 @@ public class InterfaceSolacePub {
 
         this.messageProducer = this.session.getMessageProducer(new JCSMPStreamingPublishEventHandler() {
             public void responseReceived(String messageID) {
-                System.out.println("Producer received response for msg: " + messageID);
+                log.debug("Producer received response for msg: {}", messageID);
             }
             public void handleError(String messageID, JCSMPException e, long timestamp) {
-                System.out.printf("Producer received error for msg: %s@%s - %s%n",
+                log.error("Producer received error for msg: {} - {} - {}",
                         messageID,timestamp,e);
             }
         });

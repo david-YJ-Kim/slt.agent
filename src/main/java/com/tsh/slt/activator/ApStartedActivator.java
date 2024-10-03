@@ -1,6 +1,10 @@
 package com.tsh.slt.activator;
 
+import com.solacesystems.jcsmp.JCSMPException;
+import com.tsh.slt.config.ApPropertyObject;
+import com.tsh.slt.config.SolaceSessionConfiguration;
 import com.tsh.slt.data.ApSharedVariable;
+import com.tsh.slt.interfaces.solace.InterfaceSolacePub;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -30,6 +34,8 @@ public class ApStartedActivator implements ApplicationRunner {
 
         this.initializeApService();
 
+        this.initializeSolaceResources();
+
         log.info("Complete Initialization.");
     }
 
@@ -50,5 +56,29 @@ public class ApStartedActivator implements ApplicationRunner {
 
 //        ScheduledExecutorService mainThread =  ApSharedVariable.getInstance().getApExecutorService();
 //        batchInvokeScheduler.startSchedule(mainThread, TimeUnit.SECONDS, 30L);
+    }
+
+    private void initializeSolaceResources(){
+
+        SolaceSessionConfiguration sessionConfiguration = SolaceSessionConfiguration.createSessionConfiguration(env);
+
+        try {
+            InterfaceSolacePub interfaceSolacePub = InterfaceSolacePub.getInstance();
+            interfaceSolacePub.init();
+            ApPropertyObject.getInstance().setInterfaceSolacePub(interfaceSolacePub);
+
+        } catch (JCSMPException e) {
+            throw new RuntimeException(e);
+        }
+
+//        try {
+//            InterfaceSolaceSub interfaceSolaceSub = new InterfaceSolaceSub();
+//            interfaceSolaceSub.run();
+//            ApPropertyObject.getInstance().setInterfaceSolaceSub(interfaceSolaceSub);
+//
+//        } catch (JCSMPException e) {
+//            throw new RuntimeException(e);
+//        }
+
     }
 }

@@ -20,7 +20,8 @@ public class  SrvMsgComSlcSendIvo extends AbsMsgCommonVo {
         String testCd;          // 테스트 코드
         String sendTopicInfo;   // 토픽 발생 정보
                                 // sample: EQP(1-10),CMN(1-10)
-        int senderCtn;          // 메시지 샌드 Thread 개수, 0이면 topic 개수 만큼
+
+        int bizExecuteCnt;      // 비즈로직 수행 횟수
         int retentionSecond;    // 유지시간 (초)
         int targetTps;          // 1초당 발송해야하는 메시지 개수
 

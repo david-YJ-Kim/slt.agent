@@ -19,8 +19,9 @@ public class ApSysTestIvo extends AbsMsgCommonVo {
         String testCd;        // 테스트 코드
         String recvTopicNm;   // 발송하는 토픽 명
         String msgSendDt;     // 메시지 발송 시간
-        Long loopMsgCnt;      // loop 횟수
-        Long unitMsgCnt;      // unit 횟수
+        int bizExecuteCnt;    // 비즈로직 수행 횟수
+        int loopMsgCnt;      // loop 횟수
+        int unitMsgCnt;      // unit 횟수
 
     }
 

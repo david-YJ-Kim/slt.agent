@@ -90,7 +90,7 @@ ap:
       prefix: FIS-ASYNC-
   interface:
     solace:
-      host: 10.184.50.81:55555
+      host: 10.184.50.81:55555,10.184.50.82:55555
       vpn: MES
       client:
         username: default
