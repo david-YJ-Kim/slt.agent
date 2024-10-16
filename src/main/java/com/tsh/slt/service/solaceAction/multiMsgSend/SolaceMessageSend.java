@@ -32,7 +32,7 @@ public class SolaceMessageSend {
 
     public static final String threadNameFormat = "%s-%s";
     public static final String cidNameFormat = "%s_AP_SYS_TEST";
-    public static final String tidFormat = "%s-%s-%s-%s-%s";
+    public static final String tidFormat = "%s-%s-%s-%s";
     public static final String testCdFormat = "%s-%s";
     public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -112,8 +112,8 @@ public class SolaceMessageSend {
 
         AtomicInteger invokeTime = new AtomicInteger(0);
         Long sleepMs = this.calculateDelayTimeWithTPS(vo.getTargetTps());
-        log.info("Thread invoke for doing service. threadName: {}, sleepMs: {}",
-                vo.getMyThreadName(), sleepMs);
+        log.info("Thread invoke for doing service. testCd: {}, threadName: {}, sleepMs: {}",
+                vo.getTestCd(), vo.getMyThreadName(), sleepMs);
 
         return () -> {
 
@@ -139,7 +139,7 @@ public class SolaceMessageSend {
                 if(unitMsgCnt == vo.getTargetTps() + 1){ break;} // TODO 작업 종료 시점
 
                 String cid = String.format(cidNameFormat, vo.getTargetSys());
-                String tid = String.format(tidFormat, cid, vo.getTestCd(), vo.getMyThreadName(), invokeTime.get(),String.valueOf(unitMsgCnt));
+                String tid = String.format(tidFormat, vo.getTestCd(), vo.getMyThreadName(), invokeTime.get(),String.valueOf(unitMsgCnt));
 
 
                 ApSysTestIvo.Body body = this.generateTestBody(vo.getTestCd(), vo.getTopicName(), sdf.format(new Date()),

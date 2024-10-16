@@ -50,7 +50,7 @@ public class SolaceActionUtil {
                 }
 
             }else{
-                String formattedNumber = String.format("%s", rangePart); // 2자리로 포맷
+                String formattedNumber = String.format("%02d", Integer.parseInt(rangePart)); // 2자리로 포맷
                 topicList.add(String.format(topicFormat, siteId, env, systemName, queueType, formattedNumber));
             }
 

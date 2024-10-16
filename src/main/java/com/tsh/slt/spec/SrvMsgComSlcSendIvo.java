@@ -16,6 +16,7 @@ public class  SrvMsgComSlcSendIvo extends AbsMsgCommonVo {
     @Data
     public static class Body extends ApMsgBody{
 
+//        String env;             // 시스템 환경 (PROD / DEV)
         String systemNm;        // 테스트 시스템 명
         String testCd;          // 테스트 코드
         String sendTopicInfo;   // 토픽 발생 정보
