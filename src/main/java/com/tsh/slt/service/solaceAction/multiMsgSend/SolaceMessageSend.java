@@ -82,7 +82,8 @@ public class SolaceMessageSend {
 
             Runnable task = this.taskEveryOneSecond(taskVo);
 
-            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+            executorService.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+            // scheduleWithFixedDelay 작업 지연발생하여도 Async 하게 진행
         }
 
     }
@@ -123,7 +124,8 @@ public class SolaceMessageSend {
 
 
                 vo.getRunningThreadList().remove(vo.getMyThreadName());
-                log.debug("Complete run.! invoke: {}, retention: {}", invokeTime, vo.getRetentionSecond());
+                log.info("Complete run.! invoke: {}, retention: {}", invokeTime, vo.getRetentionSecond());
+                System.out.println("Thread Send Complete " + vo.getMyThreadName());
 
                 if(vo.getRunningThreadList().isEmpty()){
                     log.info("This is last thread. shut down service.");
