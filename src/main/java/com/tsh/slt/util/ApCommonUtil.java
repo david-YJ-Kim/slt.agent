@@ -8,6 +8,7 @@ public class ApCommonUtil {
         return String.format("%s-%s-%s-", groupName, siteName, envType) + String.format("%04d", Integer.valueOf(processSeq) );
     }
 
+
     /**
      * 요청한 길이만큼의 UUID 생성
      * @param maxLength
