@@ -24,4 +24,6 @@ public class MsgSendTaskVo {
 
 
     HttpRequestVo httpRequestVo; // http 발송용
+
+    FisMsgSendReqVo fisMsgSendReqVo; // fis 메시지 샌드 인포
 }

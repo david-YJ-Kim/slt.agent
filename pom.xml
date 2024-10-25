@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>com.tsh.slt</groupId>
-  <artifactId>stl.agent</artifactId>
+  <artifactId>test.agent</artifactId>
   <version>0.0.4-SNAPSHOT</version>
   <name>SltAgent</name>
   <description>SLT.AGENT</description>

@@ -30,6 +30,16 @@ public class ServiceExecuteController {
     @Autowired
     HttpRequestService httpRequestService;
 
+
+    /**
+     * 테스트 메시지 발송하는 엔드포인트
+     * 케이스 1. 일반 부하 발생기
+     * 케이스 2. FIS 부하 발생기
+     * 케이스 3. HTTP 부하 발생기
+     *
+     * @param ivo
+     * @return
+     */
     @PostMapping(ApMessageList.SRV_MSG_COM_SLC_SEND)
     public ResponseEntity executeRequest(@RequestBody SrvMsgComSlcSendIvo ivo) {
 
@@ -37,25 +47,20 @@ public class ServiceExecuteController {
         String cid = head.getCid();
 
         log.info("Message send {}", cid);
-        switch (cid) {
-            case ApMessageList.AP_SYS_TEST:
-                this.messageSendService.executeJob(ivo);
-                break;
-
-            case ApMessageList.AP_FIS_TEST:
-                break;
-
-
-
-        }
+        this.messageSendService.executeJob(ivo);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
 
-
-        @PostMapping(ApMessageList.SRV_MSG_COM_HTTP_SEND)
-        public ResponseEntity executeRequest(@RequestBody SrvMsgComHttpSendIvo ivo) {
+    /**
+     * 단일 HTTP 메시지 발송하는 엔드포인트
+     * 
+     * @param ivo
+     * @return
+     */
+    @PostMapping(ApMessageList.SRV_MSG_COM_HTTP_SEND)
+    public ResponseEntity executeRequest(@RequestBody SrvMsgComHttpSendIvo ivo) {
 
         log.info(ivo.toString());
 

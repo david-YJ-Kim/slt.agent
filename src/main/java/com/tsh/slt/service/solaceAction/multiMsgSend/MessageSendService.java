@@ -9,9 +9,11 @@ import com.tsh.slt.data.ApSharedVariable;
 import com.tsh.slt.interfaces.solace.InterfaceSolacePub;
 import com.tsh.slt.service.httpRequest.HttpRequestService;
 import com.tsh.slt.service.httpRequest.vo.HttpRequestVo;
+import com.tsh.slt.service.solaceAction.multiMsgSend.vo.FisMsgSendReqVo;
 import com.tsh.slt.service.solaceAction.multiMsgSend.vo.MsgSendTaskVo;
 import com.tsh.slt.service.solaceAction.multiMsgSend.vo.SlcMessageSendJobVo;
 import com.tsh.slt.spec.ApSysTestIvo;
+import com.tsh.slt.spec.FisFileReportVo;
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;
 import com.tsh.slt.spec.common.AbsMsgHead;
 import com.tsh.slt.util.ApCommonUtil;
@@ -85,6 +87,7 @@ public class MessageSendService {
                     .retentionSecond(body.getRetentionSecond())
                     .targetTps(body.getTargetTps())
                     .httpRequestVo(body.getHttpRequestVo() == null ? null : body.getHttpRequestVo())
+                    .fisMsgSendReqVo(body.getFisMsgSendReqVo() == null ? null : body.getFisMsgSendReqVo())
                     .build();
 
             Runnable task = this.taskEveryOneSecond(taskVo);
@@ -144,7 +147,7 @@ public class MessageSendService {
             int unitMsgCnt = 0;
 
             while (true){
-                unitMsgCnt ++;
+                ++unitMsgCnt;
                 if(unitMsgCnt == vo.getTargetTps() + 1){ break;} // TODO 작업 종료 시점
 
                 String cid = String.format(cidNameFormat, vo.getTargetSys());
@@ -154,8 +157,6 @@ public class MessageSendService {
                 ApSysTestIvo.Body body = this.generateTestBody(vo.getTestCd(), vo.getTopicName(), sdf.format(new Date()),
                                                     vo.getBizExecuteCnt(), invokeTime.get(), unitMsgCnt);
 
-                log.debug("Tid: {}, TargetSystem: {}, TopicName: {}, TestCd: {}, Run Thread. name: {}, invokeTime: {} unitMsgCnt: {}"
-                        ,tid,vo.getTargetSys(), vo.getTopicName(), vo.getTestCd(), vo.getMyThreadName(), invokeTime, unitMsgCnt);
 
 
                 try {
@@ -164,13 +165,34 @@ public class MessageSendService {
                     HttpRequestVo requestVo = vo.getHttpRequestVo();
 
                     if(requestVo == null){
-                        InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
+
+
+
+                        if(vo.getFisMsgSendReqVo() != null) {
+                            FisMsgSendReqVo fisMsgSendReqVo = vo.getFisMsgSendReqVo();
+
+                            int tps = vo.getTargetTps() < 20 ? 20 : vo.getTargetTps();
+                            String fileFormat = "inspection_result_file_row_count_%s_%sTPS_241025.csv";
+                            String fileName = String.format(fileFormat, String.valueOf(fisMsgSendReqVo.getFileRawCount()), String.valueOf(tps));
+
+                            payload = this.generateFisPayload(tid, vo.getTargetSys(), fileName, vo.getTestCd());
+
+                        }
+
+
+                            InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
 
                     }else {
                         requestVo.setPayload(payload);
                         this.httpRequestService.sendHttpSyncRequest(requestVo);
                     }
 
+                    String sendType = "BASIC";
+                    if(vo.getFisMsgSendReqVo() != null) {sendType = "FIS";}
+                    if(requestVo != null) {sendType = "HTTP";}
+
+                    log.info("message send trace. Type:{}, Tid: {}, TargetSystem: {}, TopicName: {}, TestCd: {}, Run Thread. name: {}, invokeTime: {} unitMsgCnt: {}, paylaod: {}"
+                            ,sendType, tid,vo.getTargetSys(), vo.getTopicName(), vo.getTestCd(), vo.getMyThreadName(), invokeTime, unitMsgCnt, payload);
 
 
 
@@ -244,6 +266,46 @@ public class MessageSendService {
                 .build();
 
         ivo.setHead(head);
+
+        return objectMapper.writeValueAsString(ivo);
+
+    }
+
+
+    /**
+     * FIS 테스트 전문 생성
+     * @param targetSystem
+     * @param fileName
+     * @return
+     */
+    private String generateFisPayload(String tid, String targetSystem, String fileName, String testCd) throws JsonProcessingException {
+
+        FisFileReportVo ivo = new FisFileReportVo();
+
+        FisFileReportVo.Body body = new FisFileReportVo.Body();
+        body.setFileType("INSP");
+        body.setFileName(fileName);
+        body.setFilePath("/home/abscapp/data/app/fis/sample/APTEST/");
+
+        body.setEqpId("AP-BU-10-01");
+        body.setLotId(testCd);
+        body.setProdMtrlId("testMtrlId");
+        body.setMtrlFace("Top");
+        body.setSiteId("SVM");
+        body.setUserId("WFS");
+
+        AbsMsgHead head = AbsMsgHead.builder()
+                .src("WFS")
+                .tgt(targetSystem)
+                .cid("FIS_FILE_REPORT")
+                .tid(tid)
+                .osrc("")
+                .srcEqp("")
+                .tgtEqp(new ArrayList<>())
+                .build();
+
+        ivo.setHead(head);
+        ivo.setBody(body);
 
         return objectMapper.writeValueAsString(ivo);
 

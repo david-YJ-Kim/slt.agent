@@ -2,6 +2,7 @@ package com.tsh.slt.spec;
 
 import com.tsh.slt.interfaces.util.ApMessageList;
 import com.tsh.slt.service.httpRequest.vo.HttpRequestVo;
+import com.tsh.slt.service.solaceAction.multiMsgSend.vo.FisMsgSendReqVo;
 import com.tsh.slt.spec.common.AbsMsgCommonVo;
 import com.tsh.slt.spec.common.ApMsgBody;
 import com.tsh.slt.spec.common.ApMsgCommonVo;
@@ -28,6 +29,8 @@ public class  SrvMsgComSlcSendIvo extends AbsMsgCommonVo {
 
 
         HttpRequestVo httpRequestVo; // http 메시지 샌드 인포
+
+        FisMsgSendReqVo fisMsgSendReqVo; // fis 메시지 샌드 인포
 
     }
 
