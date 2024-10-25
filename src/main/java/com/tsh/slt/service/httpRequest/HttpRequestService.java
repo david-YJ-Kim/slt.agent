@@ -3,7 +3,6 @@ package com.tsh.slt.service.httpRequest;
 
 import com.tsh.slt.service.httpRequest.vo.HttpRequestVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,7 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 @Service
 @Slf4j
@@ -65,32 +67,43 @@ public class HttpRequestService {
      * @param requestVo
      * @return
      */
-    public Mono<String> sendHttpAsyncRequest(HttpRequestVo requestVo) {
+    public Mono<HttpRequestVo> sendHttpAsyncRequest(HttpRequestVo requestVo) {
 
         // Construct the URL
-        String url = requestVo.getTgtServer() + ":" + requestVo.getTgtPort() + requestVo.getUri();
+//        String url = requestVo.getTgtServer() + ":" + requestVo.getTgtPort() + requestVo.getUri();
 
-        // Create HttpHeaders and set the headers from the requestVo
-        HttpHeaders headers = new HttpHeaders();
-        if (requestVo.getHeaders() != null) {
-            headers.setAll(requestVo.getHeaders());
-        }
 
-        // Create the WebClient request
-        WebClient.RequestBodySpec requestSpec = webClient.method(requestVo.getMethod())
-                .uri(url)
-                .headers(httpHeaders -> httpHeaders.putAll(headers));
+        return webClient.post().uri("/api/v1/resource").body(Mono.just(requestVo), HttpRequestVo.class).retrieve().bodyToMono(HttpRequestVo.class);
 
-        // Add payload if method is POST or PUT
-        if (requestVo.getMethod() == HttpMethod.POST || requestVo.getMethod() == HttpMethod.PUT) {
-            return requestSpec.body(BodyInserters.fromObject(requestVo.getPayload()))
-                    .retrieve()
-                    .bodyToMono(String.class);
-        } else {
-            // No body for GET and DELETE
-            return requestSpec.retrieve()
-                    .bodyToMono(String.class);
-        }
+//        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(requestVo.getTgtServer() + ":" + requestVo.getTgtPort() + requestVo.getUri());
+//        if (requestVo.getQueryParams() != null) {
+//            requestVo.getQueryParams().forEach(uriBuilder::queryParam);
+//        }
+//        URI uri = uriBuilder.build().toUri();
+//
+//
+//        // Create HttpHeaders and set the headers from the requestVo
+//        HttpHeaders headers = new HttpHeaders();
+//        if (requestVo.getHeaders() != null) {
+//            headers.setAll(requestVo.getHeaders());
+//        }
+//
+//        // Create the WebClient request
+//        WebClient.RequestBodySpec requestSpec = webClient.method(requestVo.getMethod())
+//                .uri(uri)
+//                .headers(httpHeaders -> httpHeaders.putAll(headers));
+//
+//        // Add payload if method is POST or PUT
+//        if (requestVo.getMethod() == HttpMethod.POST || requestVo.getMethod() == HttpMethod.PUT) {
+//            return requestSpec.body(BodyInserters.fromValue(requestVo.getPayload()))
+//                    .retrieve()
+//                    .bodyToMono(String.class);
+//        } else {
+//            // No body for GET and DELETE
+//            return requestSpec.retrieve()
+//                    .bodyToMono(String.class);
+//        }
 
     }
+
 }

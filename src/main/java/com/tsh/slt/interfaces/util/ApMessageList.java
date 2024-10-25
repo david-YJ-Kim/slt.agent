@@ -9,6 +9,8 @@ public final class ApMessageList {
      * Test 메시지 발송용
      */
     public static final String AP_SYS_TEST = "AP_SYS_TEST";
+    public static final String AP_FIS_TEST = "AP_FIS_TEST";
+    public static final String AP_HTTP_TEST = "AP_HTTP_TEST";
 
 
     /**
@@ -20,4 +22,5 @@ public final class ApMessageList {
      */
     // SLC SEND : SolaceMessageSend
     public static final String SRV_MSG_COM_SLC_SEND = "SRV_MSG_COM_SLC_SEND";
+    public static final String SRV_MSG_COM_HTTP_SEND = "SRV_MSG_COM_HTTP_SEND";
 }

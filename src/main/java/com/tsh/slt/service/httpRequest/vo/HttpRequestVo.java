@@ -1,12 +1,15 @@
 package com.tsh.slt.service.httpRequest.vo;
 
 
+import com.tsh.slt.spec.SrvMsgComHttpSendIvo;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
 
 @Data
+@Builder
 public class HttpRequestVo {
 
     private String tgtServer;          // 대상 서버 주소 (e.g., https://example.com)
@@ -16,6 +19,7 @@ public class HttpRequestVo {
     private String payload;            // 요청의 본문 (POST, PUT 등의 요청에 사용)
     private Map<String, String> headers; // HTTP 헤더 (Authorization, Content-Type 등)
     private Map<String, String> queryParams; // 쿼리 파라미터 (e.g., ?key=value 형식)
+
 }
 
 

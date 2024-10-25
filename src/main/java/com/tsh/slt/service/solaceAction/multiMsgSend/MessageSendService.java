@@ -7,13 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solacesystems.jcsmp.JCSMPException;
 import com.tsh.slt.data.ApSharedVariable;
 import com.tsh.slt.interfaces.solace.InterfaceSolacePub;
+import com.tsh.slt.service.httpRequest.HttpRequestService;
+import com.tsh.slt.service.httpRequest.vo.HttpRequestVo;
+import com.tsh.slt.service.solaceAction.multiMsgSend.vo.MsgSendTaskVo;
 import com.tsh.slt.service.solaceAction.multiMsgSend.vo.SlcMessageSendJobVo;
-import com.tsh.slt.service.solaceAction.multiMsgSend.vo.SlcMsgSendTaskVo;
 import com.tsh.slt.spec.ApSysTestIvo;
 import com.tsh.slt.spec.SrvMsgComSlcSendIvo;
 import com.tsh.slt.spec.common.AbsMsgHead;
 import com.tsh.slt.util.ApCommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
-public class SolaceMessageSend {
+public class MessageSendService {
 
     public static final String threadNameFormat = "%s-%s";
     public static final String cidNameFormat = "%s_AP_SYS_TEST";
@@ -38,6 +41,9 @@ public class SolaceMessageSend {
 
     ApSharedVariable sharedVariable = ApSharedVariable.getInstance();
 
+
+    @Autowired
+    HttpRequestService httpRequestService;
 
     @Async
     public void executeJob(SrvMsgComSlcSendIvo ivo){
@@ -49,7 +55,7 @@ public class SolaceMessageSend {
 
         log.info("Target send topic list: {}", sendTopicList);
 
-        // TODO Job을 관리하는 로직 필요 시
+        // TODO Job 을 관리하는 로직 필요 시
         SlcMessageSendJobVo jobVo = new SlcMessageSendJobVo();
         jobVo.setJobStartTm(System.currentTimeMillis());
         jobVo.setSrvMsgComSlcSendIvo(ivo);
@@ -68,7 +74,7 @@ public class SolaceMessageSend {
             String threadName = String.format(threadNameFormat, Thread.currentThread().getName(), topicName);
             log.info("Job Start {}", threadName);
 
-            SlcMsgSendTaskVo taskVo = SlcMsgSendTaskVo.builder()
+            MsgSendTaskVo taskVo = MsgSendTaskVo.builder()
                     .topicName(topicName)
                     .testCd(testCode)
                     .targetSys(body.getSystemNm())
@@ -78,6 +84,7 @@ public class SolaceMessageSend {
                     .bizExecuteCnt(body.getBizExecuteCnt())
                     .retentionSecond(body.getRetentionSecond())
                     .targetTps(body.getTargetTps())
+                    .httpRequestVo(body.getHttpRequestVo() == null ? null : body.getHttpRequestVo())
                     .build();
 
             Runnable task = this.taskEveryOneSecond(taskVo);
@@ -109,7 +116,7 @@ public class SolaceMessageSend {
      * @param vo
      * @return
      */
-    private Runnable taskEveryOneSecond(SlcMsgSendTaskVo vo){
+    private Runnable taskEveryOneSecond(MsgSendTaskVo vo){
 
         AtomicInteger invokeTime = new AtomicInteger(0);
         Long sleepMs = this.calculateDelayTimeWithTPS(vo.getTargetTps());
@@ -154,7 +161,18 @@ public class SolaceMessageSend {
                 try {
 
                     String payload = this.generateTestPayload(tid, vo.getTargetSys(), cid, body);
-                    InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
+                    HttpRequestVo requestVo = vo.getHttpRequestVo();
+
+                    if(requestVo == null){
+                        InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
+
+                    }else {
+                        requestVo.setPayload(payload);
+                        this.httpRequestService.sendHttpSyncRequest(requestVo);
+                    }
+
+
+
 
                 } catch (JCSMPException e) {
                     e.printStackTrace();

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solacesystems.jcsmp.*;
 import com.tsh.slt.config.SolaceSessionConfiguration;
 import com.tsh.slt.interfaces.solace.util.code.ApEnumConstant;
+import com.tsh.slt.util.ApCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -57,7 +58,9 @@ public class InterfaceSolacePub {
 
             SDTMap userPropMap = JCSMPFactory.onlyInstance().createMap();
 
+            userPropMap.putString(ApEnumConstant.messageId.name(), "AP-" + ApCommonUtil.generateUUID(15));
             userPropMap.putString(ApEnumConstant.cid.name(), sendCid);
+
             txtMsg.setText(payload);
             txtMsg.setProperties(userPropMap);
 
