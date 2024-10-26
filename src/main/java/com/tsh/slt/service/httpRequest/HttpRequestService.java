@@ -35,7 +35,15 @@ public class HttpRequestService {
     public ResponseEntity<String> sendHttpSyncRequest(HttpRequestVo vo) {
 
         // Construct the URL from the server, port, and URI
-        String url = vo.getTgtServer() + ":" + vo.getTgtPort() + vo.getUri();
+
+        String url;
+        if(vo.getTgtPort() == null || vo.getTgtPort().isEmpty()){
+
+            url = vo.getTgtServer()  + vo.getUri();
+        }else {
+            url = vo.getTgtServer() + ":" + vo.getTgtPort() + vo.getUri();
+
+        }
 
         // Create HttpHeaders and add the headers from the requestVo
         HttpHeaders headers = new HttpHeaders();

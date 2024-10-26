@@ -92,7 +92,7 @@ public class MessageSendService {
 
             Runnable task = this.taskEveryOneSecond(taskVo);
 
-            executorService.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
             // scheduleWithFixedDelay 작업 지연발생하여도 Async 하게 진행
         }
 
@@ -121,7 +121,7 @@ public class MessageSendService {
      */
     private Runnable taskEveryOneSecond(MsgSendTaskVo vo){
 
-        AtomicInteger invokeTime = new AtomicInteger(0);
+        AtomicInteger invokeTime = new AtomicInteger(1);
         Long sleepMs = this.calculateDelayTimeWithTPS(vo.getTargetTps());
         log.info("Thread invoke for doing service. testCd: {}, threadName: {}, sleepMs: {}",
                 vo.getTestCd(), vo.getMyThreadName(), sleepMs);
@@ -130,16 +130,15 @@ public class MessageSendService {
 
             invokeTime.getAndIncrement();
 
-            if(vo.getRetentionSecond() + 1 == invokeTime.get()){
+            if(vo.getRetentionSecond() + 1 <= invokeTime.get()){
 
 
                 vo.getRunningThreadList().remove(vo.getMyThreadName());
                 log.info("Complete run.! invoke: {}, retention: {}", invokeTime, vo.getRetentionSecond());
-                System.out.println("Thread Send Complete " + vo.getMyThreadName());
 
                 if(vo.getRunningThreadList().isEmpty()){
                     log.info("This is last thread. shut down service.");
-                    vo.getService().shutdown();
+                    vo.getService().shutdownNow();
                 }
             }
 
@@ -148,7 +147,10 @@ public class MessageSendService {
 
             while (true){
                 ++unitMsgCnt;
-                if(unitMsgCnt == vo.getTargetTps() + 1){ break;} // TODO 작업 종료 시점
+                if(unitMsgCnt == vo.getTargetTps() + 1){
+                    log.debug("Complete send thread");
+                    break;
+                } // TODO 작업 종료 시점
 
                 String cid = String.format(cidNameFormat, vo.getTargetSys());
                 String tid = String.format(tidFormat, vo.getTestCd(), vo.getMyThreadName(), invokeTime.get(),String.valueOf(unitMsgCnt));
@@ -180,9 +182,18 @@ public class MessageSendService {
                         }
 
 
+
+                        if(vo.getRetentionSecond() + 1 <= invokeTime.get()){
+                            continue;
+                        }
                             InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
 
                     }else {
+
+
+                        if(vo.getRetentionSecond() + 1 <= invokeTime.get()){
+                            continue;
+                        }
                         requestVo.setPayload(payload);
                         this.httpRequestService.sendHttpSyncRequest(requestVo);
                     }
