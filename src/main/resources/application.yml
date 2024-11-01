@@ -90,7 +90,8 @@ ap:
       prefix: AP-ASYNC-
   interface:
     solace:
-      host: 10.184.50.81:55555,10.184.50.82:55555
+#      host: 10.184.50.81:55555,10.184.50.82:55555
+      host: localhost:55555
       vpn: MES
       client:
         username: default
@@ -98,7 +99,7 @@ ap:
       connect:
         trial-count: 2
       reconnect:
-        trial-count: 20
+        trial-count: 1
         per-host: 5
     destination:
       send:

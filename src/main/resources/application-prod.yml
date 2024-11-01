@@ -98,7 +98,7 @@ ap:
       connect:
         trial-count: 2
       reconnect:
-        trial-count: 20
+        trial-count: 1
         per-host: 5
     destination:
       send:
