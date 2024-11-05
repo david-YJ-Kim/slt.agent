@@ -147,7 +147,8 @@ public class MessageSendService {
             int unitMsgCnt = 0;
 
             while (true){
-                ++unitMsgCnt;
+                ++ unitMsgCnt;
+
                 if(unitMsgCnt == vo.getTargetTps() + 1){ break;} // TODO 작업 종료 시점
 
                 String cid = String.format(cidNameFormat, vo.getTargetSys());
@@ -166,21 +167,20 @@ public class MessageSendService {
 
                     if(requestVo == null){
 
-
-
                         if(vo.getFisMsgSendReqVo() != null) {
                             FisMsgSendReqVo fisMsgSendReqVo = vo.getFisMsgSendReqVo();
 
                             int tps = vo.getTargetTps() < 20 ? 20 : vo.getTargetTps();
+
+                            cid = "FIS_FILE_REPORT";
                             String fileFormat = "inspection_result_file_row_count_%s_%sTPS_241025.csv";
                             String fileName = String.format(fileFormat, String.valueOf(fisMsgSendReqVo.getFileRawCount()), String.valueOf(tps));
 
-                            payload = this.generateFisPayload(tid, vo.getTargetSys(), fileName, vo.getTestCd());
+                            payload = this.generateFisPayload(tid, vo.getTargetSys(), fileName, vo.getTestCd(), fisMsgSendReqVo.getFilePath());
 
                         }
-
-
                             InterfaceSolacePub.getInstance().sendTopicMessage(cid, payload, vo.getTopicName());
+
 
                     }else {
                         requestVo.setPayload(payload);
@@ -278,14 +278,14 @@ public class MessageSendService {
      * @param fileName
      * @return
      */
-    private String generateFisPayload(String tid, String targetSystem, String fileName, String testCd) throws JsonProcessingException {
+    private String generateFisPayload(String tid, String targetSystem, String fileName, String testCd, String filePath) throws JsonProcessingException {
 
         FisFileReportVo ivo = new FisFileReportVo();
 
         FisFileReportVo.Body body = new FisFileReportVo.Body();
         body.setFileType("INSP");
         body.setFileName(fileName);
-        body.setFilePath("/home/abscapp/data/app/fis/sample/APTEST/");
+        body.setFilePath(filePath);
 
         body.setEqpId("AP-BU-10-01");
         body.setLotId(testCd);

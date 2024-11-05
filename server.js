@@ -11,5 +11,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-    console.log(`Server running at http://${HOST}:${PORT}/api/v1/resource`);
+    console.log(`Server running at http://${HOST}:${PORT}/oia/BRS_AP_SYS_TEST`);
 });

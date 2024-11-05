@@ -101,6 +101,7 @@ ap:
       reconnect:
         trial-count: 1
         per-host: 5
+        retry-wait-in-millis: 1000
     destination:
       send:
         topic: SVM/DEV/EDC/CMN/00

@@ -43,6 +43,10 @@ public class SolaceSessionConfiguration {
     @Value("${ap.interface.solace.reconnect.per-host}")
     private int reconnectPerHost;
 
+    @Value("${ap.interface.solace.reconnect.per-retry-wait-in-millis}")
+    private int retryWaitInMillis;
+
+
     private String clientName;
 
     private Map<String, String> argBag = new HashMap<String, String>();
@@ -93,9 +97,12 @@ public class SolaceSessionConfiguration {
         properties.setProperty(JCSMPProperties.IGNORE_DUPLICATE_SUBSCRIPTION_ERROR, true);
 
         JCSMPChannelProperties chProp = new JCSMPChannelProperties();
+
+        chProp.setConnectRetries(connectTrialCount); // 연결 트라이 횟수
         chProp.setReconnectRetries(reconnectTrialCount); // 세션 다운 시 재 연결 트라이 횟수
         chProp.setConnectRetriesPerHost(reconnectPerHost); // 세션 리트라이 간격
-        chProp.setConnectRetries(connectTrialCount);
+        chProp.setReconnectRetryWaitInMillis(retryWaitInMillis); // 세션 리트라이 간격 밀리세컨드
+
 
         properties.setProperty(JCSMPChannelProperties.RECONNECT_RETRIES, chProp);
 
