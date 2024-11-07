@@ -96,10 +96,10 @@ ap:
         username: default
         password: admin
       connect:
-        trial-count: 2
+        retries: 1
+        retries-per-host: 0
       reconnect:
-        trial-count: 1
-        per-host: 5
+        retries: -1
         retry-wait-in-millis: 1000
     destination:
       send:

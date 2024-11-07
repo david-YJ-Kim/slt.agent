@@ -36,14 +36,14 @@ public class SolaceSessionConfiguration {
     private String userId;
     @Value("${ap.interface.solace.client.password}")
     private String userPassword;
-    @Value("${ap.interface.solace.connect.trial-count}")
-    private int connectTrialCount;
-    @Value("${ap.interface.solace.reconnect.trial-count}")
-    private int reconnectTrialCount;
-    @Value("${ap.interface.solace.reconnect.per-host}")
-    private int reconnectPerHost;
+    @Value("${ap.interface.solace.connect.retries}")
+    private int connectRetries;
+    @Value("${ap.interface.solace.reconnect.retries}")
+    private int reconnectRetries;
+    @Value("${ap.interface.solace.connect.retries-per-host}")
+    private int connectRetriesPerHost;
 
-    @Value("${ap.interface.solace.reconnect.per-retry-wait-in-millis}")
+    @Value("${ap.interface.solace.reconnect.retry-wait-in-millis}")
     private int retryWaitInMillis;
 
 
@@ -96,15 +96,13 @@ public class SolaceSessionConfiguration {
         //endpoint에 등록되어 있는 subscription으로 인해 발생하는 에러 무시
         properties.setProperty(JCSMPProperties.IGNORE_DUPLICATE_SUBSCRIPTION_ERROR, true);
 
-        JCSMPChannelProperties chProp = new JCSMPChannelProperties();
-
-        chProp.setConnectRetries(connectTrialCount); // 연결 트라이 횟수
-        chProp.setReconnectRetries(reconnectTrialCount); // 세션 다운 시 재 연결 트라이 횟수
-        chProp.setConnectRetriesPerHost(reconnectPerHost); // 세션 리트라이 간격
-        chProp.setReconnectRetryWaitInMillis(retryWaitInMillis); // 세션 리트라이 간격 밀리세컨드
 
 
-        properties.setProperty(JCSMPChannelProperties.RECONNECT_RETRIES, chProp);
+        JCSMPChannelProperties cp = (JCSMPChannelProperties) properties.getProperty(JCSMPProperties.CLIENT_CHANNEL_PROPERTIES);
+        cp.setConnectRetries(connectRetries); // 연결 트라이 횟수
+        cp.setReconnectRetries(reconnectRetries); // 세션 다운 시 재 연결 트라이 횟수
+        cp.setConnectRetriesPerHost(connectRetriesPerHost); // 세션 리트라이 간격
+        cp.setReconnectRetryWaitInMillis(retryWaitInMillis); // 세션 리트라이 간격 밀리세컨드
 
         return properties;
     }
