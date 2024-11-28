@@ -35,21 +35,38 @@ logging:
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
 #end oracle
-
 spring:
-  datasource:
-    #oracle
-    driver-class-name: oracle.jdbc.OracleDriver
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
+  jpa:
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 1000
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  transaction:
+    mode: jdbc
 
-    url: jdbc:oracle:thin:@localhost:1521:ORCL
-#    url: jdbc:mysql://localhost:3306/mysql
-    # 로컬에서 서버 URL 접속 정보로 붙지를 못함 내용 찾아봐야함
-#    username: root
-#    password: 1234
-    username: mesadm
-    password: absolics12#
+  datasource:
+    primary:
+      url: jdbc:oracle:thin:@localhost:1521:ORCL
+      driver-class-name: oracle.jdbc.OracleDriver
+      username: mesadm
+      password: absolics12#
+
+    secondary:
+      url: jdbc:sqlite:sqlitesample-agent.db
+      driver-class-name: org.sqlite.JDBC
+      username: admin
+      password: admin
+
+    tertiary:
+      url: jdbc:sqlite:C:/Workspace/sellter/sellter.agent.spring/sellter_sean.sqlite3
+      driver-class-name: org.sqlite.JDBC
+      username: admin
+      password: admin
 
     hikari:
       minimum-idle: 5
@@ -61,17 +78,6 @@ spring:
       auto-commit: true
 
 
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-          batch_size: 1000
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-  transaction:
-    mode: jdbc
 
 
 ##### Application Config ####
@@ -87,10 +93,11 @@ ap:
       max: 50
     capacity: 1000
     name:
-      prefix: FIS-ASYNC-
+      prefix: AP-ASYNC-
   interface:
     solace:
-      host: 10.184.50.81:55555,10.184.50.82:55555
+#      host: 10.184.50.81:55555,10.184.50.82:55555
+      host: localhost:55555
       vpn: MES
       client:
         username: default

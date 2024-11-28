@@ -37,6 +37,19 @@ mybatis:
 #end oracle
 
 spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 1000
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  transaction:
+    mode: jdbc
+
+
   datasource:
     #oracle
     driver-class-name: oracle.jdbc.OracleDriver
@@ -61,17 +74,6 @@ spring:
       auto-commit: true
 
 
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-          batch_size: 1000
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-  transaction:
-    mode: jdbc
 
 
 ##### Application Config ####
@@ -97,10 +99,10 @@ ap:
         username: default
         password: admin
       connect:
-        trial-count: 2
+        retries: 1
+        retries-per-host: 0
       reconnect:
-        trial-count: 1
-        per-host: 5
+        retries: -1
         retry-wait-in-millis: 1000
     destination:
       send:
