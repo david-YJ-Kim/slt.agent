@@ -103,7 +103,7 @@ ap:
         retries-per-host: 0
       reconnect:
         retries: -1
-        retry-wait-in-millis: 1000
+        retry-wait-in-millis: 10
     destination:
       send:
         topic: SVM/DEV/EDC/CMN/00

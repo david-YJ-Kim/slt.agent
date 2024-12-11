@@ -100,8 +100,8 @@ public class SolaceSessionConfiguration {
 
         JCSMPChannelProperties cp = (JCSMPChannelProperties) properties.getProperty(JCSMPProperties.CLIENT_CHANNEL_PROPERTIES);
         cp.setConnectRetries(connectRetries); // 연결 트라이 횟수
-        cp.setReconnectRetries(reconnectRetries); // 세션 다운 시 재 연결 트라이 횟수
         cp.setConnectRetriesPerHost(connectRetriesPerHost); // 세션 리트라이 간격
+        cp.setReconnectRetries(reconnectRetries); // 세션 다운 시 재 연결 트라이 횟수
         cp.setReconnectRetryWaitInMillis(retryWaitInMillis); // 세션 리트라이 간격 밀리세컨드
 
         return properties;

@@ -48,8 +48,8 @@ spring:
     # 로컬에서 서버 URL 접속 정보로 붙지를 못함 내용 찾아봐야함
 #    username: root
 #    password: 1234
-    username: mesadm
-    password: absolics12#
+#    username: mesadm
+#    password: absolics12#
 
     hikari:
       minimum-idle: 5
@@ -100,7 +100,7 @@ ap:
         retries-per-host: 0
       reconnect:
         retries: -1
-        retry-wait-in-millis: 1000
+        retry-wait-in-millis: 10
     destination:
       send:
         topic: SVM/DEV/EDC/CMN/00

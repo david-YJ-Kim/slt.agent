@@ -80,6 +80,7 @@ public class MessageSendService {
                     .topicName(topicName)
                     .testCd(testCode)
                     .targetSys(body.getSystemNm())
+                    .targetSysInHead(ivo.getHead().getTgt())
                     .service(executorService)
                     .runningThreadList(runningThreadList)
                     .myThreadName(threadName)
@@ -151,7 +152,7 @@ public class MessageSendService {
 
                 if(unitMsgCnt == vo.getTargetTps() + 1){ break;} // TODO 작업 종료 시점
 
-                String cid = String.format(cidNameFormat, vo.getTargetSys());
+                String cid = String.format(cidNameFormat, vo.getTargetSysInHead());
                 String tid = String.format(tidFormat, vo.getTestCd(), vo.getMyThreadName(), invokeTime.get(),String.valueOf(unitMsgCnt));
 
 
