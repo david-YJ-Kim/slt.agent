@@ -23,4 +23,13 @@ public final class ApMessageList {
     // SLC SEND : SolaceMessageSend
     public static final String SRV_MSG_COM_SLC_SEND = "SRV_MSG_COM_SLC_SEND";
     public static final String SRV_MSG_COM_HTTP_SEND = "SRV_MSG_COM_HTTP_SEND";
+
+
+    /*
+    USGM 서비스
+     */
+    public static final String SRV_USGM_NEW_RECORD = "SRV_USGM_NEW_RECORD";
+    public static final String SRV_USGM_FETCH_ALL = "SRV_USGM_FETCH_ALL";
+
+
 }

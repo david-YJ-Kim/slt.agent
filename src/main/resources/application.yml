@@ -29,6 +29,9 @@ logging:
           core:
             JdbcTemplate : debug
       hibernate:
+        type:
+          descriptor:
+            sql: TRACE
         SQL: debug
 
 #start oracle
@@ -59,7 +62,7 @@ spring:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
 
-    url: jdbc:sqlite:C:\workspace\slt\slt.agent\src\main\resources\data\backup\sellter\db\sellter_sean.sqlite3
+    url: jdbc:sqlite:C:\workspace\slt\slt.agent\src\main\resources\apLocalData.db
 #    url: jdbc:oracle:thin:@localhost:1521:ORCL
 #    url: jdbc:mysql://localhost:3306/mysql
     # 로컬에서 서버 URL 접속 정보로 붙지를 못함 내용 찾아봐야함
