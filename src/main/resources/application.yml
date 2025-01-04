@@ -37,6 +37,19 @@ mybatis:
 #end oracle
 
 spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 1000
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  transaction:
+    mode: jdbc
+
+
   datasource:
     #oracle
     driver-class-name: oracle.jdbc.OracleDriver
@@ -61,17 +74,6 @@ spring:
       auto-commit: true
 
 
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-          batch_size: 1000
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-  transaction:
-    mode: jdbc
 
 
 ##### Application Config ####
@@ -90,16 +92,18 @@ ap:
       prefix: AP-ASYNC-
   interface:
     solace:
-      host: 10.184.50.81:55555,10.184.50.82:55555
+#      host: 10.184.50.81:55555,10.184.50.82:55555
+      host: localhost:55555
       vpn: MES
       client:
         username: default
         password: admin
       connect:
-        trial-count: 2
+        retries: 1
+        retries-per-host: 0
       reconnect:
-        trial-count: 20
-        per-host: 5
+        retries: -1
+        retry-wait-in-millis: 10
     destination:
       send:
         topic: SVM/DEV/EDC/CMN/00

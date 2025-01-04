@@ -1,0 +1,26 @@
+SLTR_LC_BAN_WORD_DEF        -       banWord
+SLTR_SVR_USER_DEF           -       user
+SLTR_SVR_USER_FAMILY_DEF    -       user
+SLTR_SVR_USER_AGENT_HIST    -       user
+SLTR_LC_USER_DEF            -       user
+SLTR_LC_USER_LIC_REL        -       user  // 미사용 검토중
+SLTR_LC_IMG_DTL             -       user
+SLTR_SVR_LIC_DEF            -       license
+SLTR_SVR_LIC_STATUS         -       license
+SLTR_SVR_BIZ_DEF            -       bizAccount
+SLTR_LC_BIZ_DEF             -       bizAccount
+SLTR_LC_BIZ_MKT_REL         -       bizAccount
+SLTR_SVR_MKT_DEF            -       market
+SLTR_LC_MKT_DEF             -       market
+SLTR_LC_KEYWORD             -       keyword
+SLTR_LC_PROD                -       product
+SLTR_LC_PROD_HIST           -       product
+SLTR_LC_PROD_DTL            -       product
+SLTR_LC_PROD_DTL_HIST       -       product
+SLTR_LC_PROD_DTL_IMG        -       product
+SLTR_LC_PROD_REGIST         -       product
+SLTR_LC_PROD_REGIST_HIST    -       product
+SLTR_LC_SALES_ORDER         -       sales
+SLTR_LC_SALES_ORDER_HIST    -       sales
+SLTR_SVR_CODE_DEF           -       code
+SLTR_LC_CODE_DEF            -       code

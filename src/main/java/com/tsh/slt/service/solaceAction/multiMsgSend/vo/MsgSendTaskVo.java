@@ -15,6 +15,7 @@ public class MsgSendTaskVo {
     String topicName;
     String testCd;
     String targetSys;
+    String targetSysInHead;
     ScheduledExecutorService service;
     ArrayList<String> runningThreadList;
     String myThreadName;

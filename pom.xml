@@ -11,7 +11,7 @@
 
   <groupId>com.tsh.slt</groupId>
   <artifactId>test.agent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
   <name>SltAgent</name>
   <description>SLT.AGENT</description>
 
