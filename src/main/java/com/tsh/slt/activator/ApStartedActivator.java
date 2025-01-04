@@ -34,7 +34,7 @@ public class ApStartedActivator implements ApplicationRunner {
 
         this.initializeApService();
 
-        this.initializeSolaceResources();
+//        this.initializeSolaceResources();
 
         log.info("Complete Initialization.");
     }

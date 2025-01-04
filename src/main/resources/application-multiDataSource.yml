@@ -56,17 +56,17 @@ spring:
       username: mesadm
       password: absolics12#
 
-    secondary:
-      url: jdbc:sqlite:sqlitesample-agent.db
-      driver-class-name: org.sqlite.JDBC
-      username: admin
-      password: admin
-
-    tertiary:
-      url: jdbc:sqlite:C:/Workspace/sellter/sellter.agent.spring/sellter_sean.sqlite3
-      driver-class-name: org.sqlite.JDBC
-      username: admin
-      password: admin
+#    secondary:
+#      url: jdbc:sqlite:sqlitesample-agent.db
+#      driver-class-name: org.sqlite.JDBC
+#      username: admin
+#      password: admin
+#
+#    tertiary:
+#      url: jdbc:sqlite:C:/Workspace/sellter/sellter.agent.spring/sellter_sean.sqlite3
+#      driver-class-name: org.sqlite.JDBC
+#      username: admin
+#      password: admin
 
     hikari:
       minimum-idle: 5
