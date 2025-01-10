@@ -6,4 +6,5 @@ import lombok.Data;
 public class ApMsgBody {
 
     private String siteId;
+    private String userId;
 }

@@ -28,8 +28,18 @@ public final class ApMessageList {
     /*
     USGM 서비스
      */
+    // 신규 레코드 등록
     public static final String SRV_USGM_NEW_RECORD = "SRV_USGM_NEW_RECORD";
+    // 전체 레코드 가져오기
     public static final String SRV_USGM_FETCH_ALL = "SRV_USGM_FETCH_ALL";
+    // 특정 레코드 수정
+    public static final String SRV_USGM_EDIT_RECORD = "SRV_USGM_EDIT_RECORD";
+    // 특정 레코드 삭제
+    public static final String SRV_USGM_DELETE_RECORD = "SRV_USGM_DELETE_RECORD";
+    // 특정 레코드 Git Pull
+    public static final String SRV_USGM_GIT_PULL = "SRV_USGM_GIT_PULL";
+    // 특정 레코드 Git Push
+    public static final String SRV_USGM_GIT_PUSH = "SRV_USGM_GIT_PUSH";
 
 
 }

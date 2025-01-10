@@ -1,13 +1,20 @@
 package com.tsh.slt.service.usgm;
 
+import com.netflix.discovery.converters.Auto;
+import com.tsh.slt.dao.entity.usgm.jpa.SnUsgmRdsEntity;
+import com.tsh.slt.dao.repository.usgm.jpa.SnUsgmRdsService;
 import com.tsh.slt.service.usgm.util.UpstreamSyncUtil;
 import com.tsh.slt.service.usgm.vo.UpStreamGitInfoVo;
+import com.tsh.slt.spec.usgm.SrvUsgmNewRecordIvo;
+import com.tsh.slt.util.service.SecurityUtilService;
+import com.tsh.slt.util.service.vo.SecurityInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -21,6 +28,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 public class UpstreamManageService {
+
+    @Autowired
+    SnUsgmRdsService snUsgmRdsService;
+
+    @Autowired
+    SecurityUtilService securityUtilService;
 
     /**
      * 깃 정보를 저장하는 메모리
@@ -78,15 +91,17 @@ public class UpstreamManageService {
 
     /**
      * Git Info Vo 생성하여 저장
-     * TODO Datasource 정리 후 저장 로직 개발
-     * @param localRepoName
-     * @param localRepoPath
-     * @param remoteRepoUrl
-     * @param remoteRepoBranchName
+     * @param ivo
      * @return
      */
-    public UpStreamGitInfoVo registerGitInfo(String localRepoName, String localRepoPath, String remoteRepoUrl, String remoteRepoBranchName ){
-        return null;
+    public SnUsgmRdsEntity srvUsgmNewRecord(SrvUsgmNewRecordIvo ivo){
+
+        SecurityInfoVo securityInfoVo = this.securityUtilService.generateSecurityInfo(ivo.getBody().getGitEmail(),
+                                                                                        ivo.getBody().getGitToken());
+        SnUsgmRdsEntity entity =  this.snUsgmRdsService.saveNewRecord(ivo, securityInfoVo, true);
+        
+        // TODO DB 접근 객체 바로 Return 하는 것은 보안 리스크. Return 객체에 대한 고민 필요
+        return entity;
     }
 
     /**

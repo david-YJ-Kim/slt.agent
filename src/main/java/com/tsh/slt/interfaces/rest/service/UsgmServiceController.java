@@ -1,10 +1,10 @@
 package com.tsh.slt.interfaces.rest.service;
 
 
-import com.tsh.slt.dao.dto.usgm.SaveRecordDto;
-import com.tsh.slt.dao.entity.usgm.jpa.SnUsgmRdsEntity;
-import com.tsh.slt.dao.repository.usgm.jpa.SnUsgmRdsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsh.slt.interfaces.util.ApMessageList;
+import com.tsh.slt.service.usgm.UpstreamManageService;
+import com.tsh.slt.spec.usgm.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +21,59 @@ import java.util.List;
 @Slf4j
 public class UsgmServiceController {
 
+
     @Autowired
-    SnUsgmRdsService snUsgmRdsService;
+    UpstreamManageService upstreamManageService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    /**
-     * Fetch all data from db.
-     * @return
-     */
-    @GetMapping(ApMessageList.SRV_USGM_FETCH_ALL)
-    public List<SnUsgmRdsEntity> fetchUsableData(){
-        return this.snUsgmRdsService.findByUseStatCd();
-    }
+    @PostMapping("/{messageName}")
+    public ResponseEntity<?> usgmServiceExecute ( @PathVariable String messageName,
+                                                  @RequestBody Object requestBody){
 
-    @PostMapping(ApMessageList.SRV_USGM_NEW_RECORD)
-    public ResponseEntity execute(@RequestBody SaveRecordDto dto){
+        log.info("Request message: {}. it's payload: {}", messageName, requestBody.toString());
+        try{
+            switch (messageName){
+                case ApMessageList.SRV_USGM_NEW_RECORD:
+                    // TODO Reflection 을 통해 동적 호출 적용 대상
+                    SrvUsgmNewRecordIvo srvUsgmNewRecordIvo = this.objectMapper.convertValue(requestBody, SrvUsgmNewRecordIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmNewRecord(srvUsgmNewRecordIvo));
 
-        this.snUsgmRdsService.saveNewRecord(dto, true);
+                case ApMessageList.SRV_USGM_GIT_PULL:
+                    if (requestBody instanceof SrvUsgmGitPullIvo) {
+                        SrvUsgmGitPullIvo ivo = (SrvUsgmGitPullIvo) requestBody;
+                    }
+                    break;
+                case ApMessageList.SRV_USGM_GIT_PUSH:
+                    if (requestBody instanceof SrvUsgmGitPushIvo) {
+                        SrvUsgmGitPushIvo ivo = (SrvUsgmGitPushIvo) requestBody;
+                    }
+                    break;
+                case ApMessageList.SRV_USGM_DELETE_RECORD:
+                    if (requestBody instanceof SrvUsgmDeleteRecordIvo) {
+                        SrvUsgmDeleteRecordIvo ivo = (SrvUsgmDeleteRecordIvo) requestBody;
+                    }
+                    break;
+                case ApMessageList.SRV_USGM_EDIT_RECORD:
+                    if (requestBody instanceof SrvUsgmEditRecordIvo) {
+                        SrvUsgmEditRecordIvo ivo = (SrvUsgmEditRecordIvo) requestBody;
+                    }
+                    break;
+                case ApMessageList.SRV_USGM_FETCH_ALL:
+                    if (requestBody instanceof SrvUsgmFetchAllIvo) {
+                        SrvUsgmFetchAllIvo ivo = (SrvUsgmFetchAllIvo) requestBody;
+                    }
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Unsupported message ID: " + messageName);
+            }
 
-        return new ResponseEntity(HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Error processing request for messageName: " + messageName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing request: " + e.getMessage());
+        }
+        return null;
     }
 }

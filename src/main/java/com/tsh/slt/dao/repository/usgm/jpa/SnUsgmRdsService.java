@@ -3,7 +3,9 @@ package com.tsh.slt.dao.repository.usgm.jpa;
 import com.tsh.slt.dao.dto.usgm.SaveRecordDto;
 import com.tsh.slt.dao.entity.usgm.jpa.ShUsgmRdsEntity;
 import com.tsh.slt.dao.entity.usgm.jpa.SnUsgmRdsEntity;
+import com.tsh.slt.spec.usgm.SrvUsgmNewRecordIvo;
 import com.tsh.slt.util.code.UseStatCd;
+import com.tsh.slt.util.service.vo.SecurityInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,28 +37,30 @@ public class SnUsgmRdsService {
 
     /**
      * Save new entity at repository. optional save in history
-     * @param dto
+     * @param ivo
      * @param updateHistoryYn
      * @return
      */
-    public SnUsgmRdsEntity saveNewRecord(SaveRecordDto dto, boolean updateHistoryYn){
+    public SnUsgmRdsEntity saveNewRecord(SrvUsgmNewRecordIvo ivo, SecurityInfoVo securityInfoVo, boolean updateHistoryYn){
 
-        log.info(dto.toString());
+        log.info(ivo.toString());
+
+        SrvUsgmNewRecordIvo.Body body = ivo.getBody();
 
         SnUsgmRdsEntity newRecord = SnUsgmRdsEntity.builder()
-                .lcl_rp_nm(dto.getLclRpNm())
-                .lcl_rp_pth(dto.getLclRpPth())
-                .rmt_rp_url(dto.getRmtRpUrl())
-                .rmt_rp_brn_nm(dto.getRmtRpBrnNm())
-                .email(dto.getEmail())
-                .pwd_hsh(dto.getPwdHsh())
-                .salt(dto.getSalt())
+                .lcl_rp_nm(body.getRepoFileName())
+                .lcl_rp_pth(body.getRepoFilePath())
+                .rmt_rp_url(body.getGitRepoUrl())
+                .rmt_rp_brn_nm(body.getGitRepoBranchName())
+                .email(body.getGitEmail())
+                .pwd_hsh(securityInfoVo.getHashedPwd())
+                .salt(securityInfoVo.getSalt())
 
                 // TODO 공통 컬럼 처리하기
                 .evnt_nm(Thread.currentThread().getStackTrace()[2].getMethodName())
                 .use_stat_cd(UseStatCd.Usable)
-                .crt_user_id(dto.getUserId())
-                .mdfy_user_id(dto.getUserId())
+                .crt_user_id(body.getUserId())
+                .mdfy_user_id(body.getUserId())
 
 
                 // TODO sqlite 는 timestamp 가 별도 없어 String으로 처리, Timestamp로 저장 시, Query 해올 때 문제가 발생.
