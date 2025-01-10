@@ -1,7 +1,6 @@
-package com.tsh.slt.service.upstreamSync.util;
+package com.tsh.slt.service.usgm.util;
 
 
-import com.tsh.slt.service.upstreamSync.vo.UpStreamGitInfoVo;
 import com.tsh.slt.util.ApCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 

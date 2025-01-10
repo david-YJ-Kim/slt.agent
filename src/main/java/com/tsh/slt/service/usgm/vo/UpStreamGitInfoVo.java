@@ -1,4 +1,4 @@
-package com.tsh.slt.service.upstreamSync.vo;
+package com.tsh.slt.service.usgm.vo;
 
 
 import lombok.Builder;

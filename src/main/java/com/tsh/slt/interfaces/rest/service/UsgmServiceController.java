@@ -25,6 +25,10 @@ public class UsgmServiceController {
     SnUsgmRdsService snUsgmRdsService;
 
 
+    /**
+     * Fetch all data from db.
+     * @return
+     */
     @GetMapping(ApMessageList.SRV_USGM_FETCH_ALL)
     public List<SnUsgmRdsEntity> fetchUsableData(){
         return this.snUsgmRdsService.findByUseStatCd();

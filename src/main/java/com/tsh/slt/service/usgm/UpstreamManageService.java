@@ -1,7 +1,7 @@
-package com.tsh.slt.service.upstreamSync;
+package com.tsh.slt.service.usgm;
 
-import com.tsh.slt.service.upstreamSync.util.UpstreamSyncUtil;
-import com.tsh.slt.service.upstreamSync.vo.UpStreamGitInfoVo;
+import com.tsh.slt.service.usgm.util.UpstreamSyncUtil;
+import com.tsh.slt.service.usgm.vo.UpStreamGitInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -75,7 +75,6 @@ public class UpstreamManageService {
         return gitInfoVoMap;
         
     }
-
 
     /**
      * Git Info Vo 생성하여 저장
