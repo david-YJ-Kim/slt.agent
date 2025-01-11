@@ -6,17 +6,21 @@ import com.tsh.slt.dao.repository.usgm.jpa.SnUsgmRdsService;
 import com.tsh.slt.service.usgm.util.UpstreamSyncUtil;
 import com.tsh.slt.service.usgm.vo.UpStreamGitInfoVo;
 import com.tsh.slt.spec.common.AbsMsgHead;
+import com.tsh.slt.spec.common.MsgReasonVo;
 import com.tsh.slt.spec.usgm.*;
 import com.tsh.slt.spec.usgm.common.GitUnitRecordVo;
 import com.tsh.slt.util.code.UseStatCd;
 import com.tsh.slt.util.service.SecurityUtilService;
 import com.tsh.slt.util.service.vo.SecurityInfoVo;
+import com.tsh.slt.util.service.vo.SecurityValidateReqVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -136,15 +140,90 @@ public class UsgmBizServiceImpl implements UsgmBizService{
         return entity;
     }
 
+
     @Override
-    public SnUsgmRdsEntity srvUsgmEditRecord(SrvUsgmEditRecordIvo ivo) {
+    public SrvUsgmEditRecordIvo srvUsgmEditRecord(SrvUsgmEditRecordIvo ivo) {
 
         SrvUsgmEditRecordIvo.Body body = ivo.getBody();
-        List<SnUsgmRdsEntity> fetchEntities = this.findEntityWithUl(
-                body.getRepoFileName(), body.getRepoFilePath(),body.getGitRepoUrl(),body.getGitRepoBranchName()
-        );
 
-        return null;
+        if(body.getObjId() == null || body.getObjId().isEmpty()){
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("0")
+                            .reasonComment("조회 요청에 필수 파라미터가 부족합니다.")
+                            .data(new HashMap<String, String>() {{ put("cnt", "0"); }})
+                            .build()
+            );
+            return ivo;
+        }
+
+        Optional<SnUsgmRdsEntity> optionalEntity = this.snUsgmRdsRepository.findById(body.getObjId());
+
+        if(optionalEntity.isPresent()){
+
+            SnUsgmRdsEntity entity = optionalEntity.get();
+            entity.setLclRpNm(body.getRepoFileName());
+            entity.setLclRpPth(body.getRepoFilePath());
+            entity.setRmtRpUrl(body.getGitRepoUrl());
+            entity.setRmtRpBrnNm(body.getGitRepoBranchName());
+
+            boolean validResult = this.securityUtilService.validatePwd(
+                    SecurityValidateReqVo.builder()
+                            .userPwd(body.getGitToken())
+                            .userId(body.getUserId())
+                            .salt(entity.getSalt())
+                            .hashedPwd(entity.getPwdHsh())
+                            .build()
+            );
+
+            // 기존 Token과 다르다면, 업데이트
+            if(!validResult){
+                SecurityInfoVo securityInfoVo = this.securityUtilService.generateSecurityInfo(
+                        entity.getEmail(),
+                        ivo.getBody().getGitToken()
+                );
+                entity.setSalt(securityInfoVo.getSalt());
+                entity.setPwdHsh(securityInfoVo.getHashedPwd());
+
+            }
+
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("0")
+                            .data(new HashMap<String, String>() {{ put("cnt", "1"); }})
+                            .build()
+            );
+
+            try{
+                this.snUsgmRdsRepository.save(entity);
+                log.info("Update data.");
+
+            }catch (Exception e){
+                e.printStackTrace();
+                ivo.getBody().setReason(
+                        MsgReasonVo.builder()
+                                .reasonCode("1")
+                                .reasonComment(e.getMessage())
+                                .data(new HashMap<String, String>() {{ put("cnt", "0"); }})
+                                .build()
+                );
+            }
+
+        }else{
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("0")
+                            .reasonComment("조회 결과가 없어 데이터 업데이트를 하지 않았습니다. ")
+                            .data(new HashMap<String, String>() {{ put("cnt", "0"); }})
+                            .build()
+            );
+
+        }
+
+
+
+        return ivo;
+
     }
 
     @Override

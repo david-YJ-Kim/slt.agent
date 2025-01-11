@@ -31,7 +31,7 @@ public interface UsgmBizService {
      * @param ivo
      * @return
      */
-    SnUsgmRdsEntity srvUsgmEditRecord(SrvUsgmEditRecordIvo ivo);
+    SrvUsgmEditRecordIvo srvUsgmEditRecord(SrvUsgmEditRecordIvo ivo);
 
 
     /**

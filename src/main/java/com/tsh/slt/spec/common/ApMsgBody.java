@@ -14,4 +14,6 @@ public class ApMsgBody {
 
     private String siteId;
     private String userId;
+    /* Request 요청에 대한 처리 결과 공유 */
+    private MsgReasonVo reason;
 }

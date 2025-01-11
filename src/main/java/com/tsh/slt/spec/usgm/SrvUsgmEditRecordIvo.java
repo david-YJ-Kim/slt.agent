@@ -25,6 +25,8 @@ public class SrvUsgmEditRecordIvo extends AbsMsgCommonVo {
     @NoArgsConstructor
     public static class Body extends ApMsgBody {
 
+        /* Record 고유 키 */
+        String objId;
         /* 로컬에 저장된 소스 폴더 이름 */
         String repoFileName;
         /* 로컬 소스 폴더 경로 */
@@ -35,9 +37,28 @@ public class SrvUsgmEditRecordIvo extends AbsMsgCommonVo {
         String gitRepoBranchName;
         /* Git 계정 접근 토큰 정보 */
         String gitToken;
-
-
-
     }
-
 }
+
+/*
+{
+  "head": {
+    "tgt": "SLT",
+    "tgtEqp": [],
+    "osrc": "",
+    "srcEqp": "",
+    "src": "OI",
+    "tid": "tid",
+    "cid": "SRV_USGM_EDIT_RECORD"
+  },
+  "body": {
+    "siteId": "SVM",
+    "userId": "DavidKim",
+    "repoFileName": "slt",
+    "repoFilePath": "C:/localPath",
+    "gitRepoUrl": "http://github.com",
+    "gitRepoBranchName": "main",
+    "gitToken": "sample-token"
+  }
+}
+ */

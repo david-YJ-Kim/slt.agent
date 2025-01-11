@@ -40,10 +40,15 @@ public class SecurityUtilService {
     public boolean validatePwd(SecurityValidateReqVo vo){
 
         // 비밀번호 검증
-        boolean isPwdMatched = BCrypt.checkpw(vo.getUserPwd() + vo.getSalt(), vo.getHashedPwd());
-        log.info("isPwdMached:{}", isPwdMatched);
+        try {
 
-        return isPwdMatched;
+            boolean isPwdMatched = BCrypt.checkpw(vo.getUserPwd() + vo.getSalt(), vo.getHashedPwd());
+            log.info("isPwdMached:{}", isPwdMatched);
+            return isPwdMatched;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
