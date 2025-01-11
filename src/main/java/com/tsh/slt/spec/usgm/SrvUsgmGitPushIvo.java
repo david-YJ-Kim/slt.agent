@@ -4,15 +4,25 @@ import com.tsh.slt.interfaces.util.ApMessageList;
 import com.tsh.slt.spec.common.AbsMsgCommonVo;
 import com.tsh.slt.spec.common.ApMsgBody;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
 public class SrvUsgmGitPushIvo extends AbsMsgCommonVo {
 
     public static String cid = ApMessageList.SRV_USGM_GIT_PUSH;
 
     Body body;
 
-    @Data
+    @Getter
+    @Setter
+    @SuperBuilder
+    @NoArgsConstructor
     public static class Body extends ApMsgBody {
 
         /* 로컬에 저장된 소스 폴더 이름 */

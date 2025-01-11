@@ -1,8 +1,12 @@
 package com.tsh.slt.spec.common;
 
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
 public class AbsMsgCommonVo {
 
     AbsMsgHead head;

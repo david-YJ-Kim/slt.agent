@@ -231,7 +231,10 @@ public class MessageSendService {
     private ApSysTestIvo.Body generateTestBody(String testCd, String topicNm, String msgSendDt,
                                                int bizExecuteCnt, int loopMsgCnt, int unitMsgCnt){
 
-        ApSysTestIvo.Body body = new ApSysTestIvo.Body();
+//        ApSysTestIvo.Body body = new ApSysTestIvo.Body();
+        ApSysTestIvo.Body body = ApSysTestIvo.Body.builder().build();
+
+
         body.setTestCd(testCd);
         body.setRecvTopicNm(topicNm);
         body.setMsgSendDt(msgSendDt);
@@ -252,7 +255,8 @@ public class MessageSendService {
      */
     private String generateTestPayload(String tid, String targetSystem, String cid, ApSysTestIvo.Body body) throws JsonProcessingException {
 
-        ApSysTestIvo ivo = new ApSysTestIvo();
+//        ApSysTestIvo ivo = new ApSysTestIvo();
+        ApSysTestIvo ivo = ApSysTestIvo.builder().build();
         ivo.setBody(body);
 
         AbsMsgHead head = AbsMsgHead.builder()
@@ -280,9 +284,11 @@ public class MessageSendService {
      */
     private String generateFisPayload(String tid, String targetSystem, String fileName, String testCd) throws JsonProcessingException {
 
-        FisFileReportVo ivo = new FisFileReportVo();
+//        FisFileReportVo ivo = new FisFileReportVo();
+        FisFileReportVo ivo = FisFileReportVo.builder().build();
 
-        FisFileReportVo.Body body = new FisFileReportVo.Body();
+//        FisFileReportVo.Body body = new FisFileReportVo.Body();
+        FisFileReportVo.Body body = FisFileReportVo.Body.builder().build();
         body.setFileType("INSP");
         body.setFileName(fileName);
         body.setFilePath("/home/abscapp/data/app/fis/sample/APTEST/");

@@ -3,7 +3,7 @@ package com.tsh.slt.interfaces.rest.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsh.slt.interfaces.util.ApMessageList;
-import com.tsh.slt.service.usgm.UpstreamManageService;
+import com.tsh.slt.service.usgm.UsgmBizServiceImpl;
 import com.tsh.slt.spec.usgm.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -23,7 +21,7 @@ public class UsgmServiceController {
 
 
     @Autowired
-    UpstreamManageService upstreamManageService;
+    UsgmBizServiceImpl upstreamManageService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -41,30 +39,25 @@ public class UsgmServiceController {
                     return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmNewRecord(srvUsgmNewRecordIvo));
 
                 case ApMessageList.SRV_USGM_GIT_PULL:
-                    if (requestBody instanceof SrvUsgmGitPullIvo) {
-                        SrvUsgmGitPullIvo ivo = (SrvUsgmGitPullIvo) requestBody;
-                    }
-                    break;
+                    SrvUsgmGitPullIvo srvUsgmGitPullIvo = this.objectMapper.convertValue(requestBody, SrvUsgmGitPullIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmGitPull(srvUsgmGitPullIvo));
+
                 case ApMessageList.SRV_USGM_GIT_PUSH:
-                    if (requestBody instanceof SrvUsgmGitPushIvo) {
-                        SrvUsgmGitPushIvo ivo = (SrvUsgmGitPushIvo) requestBody;
-                    }
-                    break;
+                    SrvUsgmGitPushIvo srvUsgmGitPushIvo = this.objectMapper.convertValue(requestBody, SrvUsgmGitPushIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmGitPush(srvUsgmGitPushIvo));
+
                 case ApMessageList.SRV_USGM_DELETE_RECORD:
-                    if (requestBody instanceof SrvUsgmDeleteRecordIvo) {
-                        SrvUsgmDeleteRecordIvo ivo = (SrvUsgmDeleteRecordIvo) requestBody;
-                    }
-                    break;
+                    SrvUsgmDeleteRecordIvo srvUsgmDeleteRecordIvo = this.objectMapper.convertValue(requestBody, SrvUsgmDeleteRecordIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmDeleteRecord(srvUsgmDeleteRecordIvo));
+
                 case ApMessageList.SRV_USGM_EDIT_RECORD:
-                    if (requestBody instanceof SrvUsgmEditRecordIvo) {
-                        SrvUsgmEditRecordIvo ivo = (SrvUsgmEditRecordIvo) requestBody;
-                    }
-                    break;
-                case ApMessageList.SRV_USGM_FETCH_ALL:
-                    if (requestBody instanceof SrvUsgmFetchAllIvo) {
-                        SrvUsgmFetchAllIvo ivo = (SrvUsgmFetchAllIvo) requestBody;
-                    }
-                    break;
+                    SrvUsgmEditRecordIvo srvUsgmEditRecordIvo = this.objectMapper.convertValue(requestBody, SrvUsgmEditRecordIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmEditRecord(srvUsgmEditRecordIvo));
+
+                case ApMessageList.SRV_USGM_FETCH_REQ:
+                    SrvUsgmFetchReqIvo srvUsgmFetchAllIvo = this.objectMapper.convertValue(requestBody, SrvUsgmFetchReqIvo.class);
+                    return ResponseEntity.ok().body(this.upstreamManageService.srvUsgmFetchReq(srvUsgmFetchAllIvo));
+
                 default:
                     return ResponseEntity.badRequest().body("Unsupported message ID: " + messageName);
             }
@@ -74,6 +67,5 @@ public class UsgmServiceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing request: " + e.getMessage());
         }
-        return null;
     }
 }

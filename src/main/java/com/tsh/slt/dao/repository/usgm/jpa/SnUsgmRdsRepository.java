@@ -10,10 +10,12 @@ public interface SnUsgmRdsRepository extends JpaRepository<SnUsgmRdsEntity, Stri
 
 
     /**
-     * Usable 상태인 항목만 조회하기
+     * Usable 상태인 항목만 전체 조회
      * @param useStatCd
      * @return
      */
     List<SnUsgmRdsEntity> findByUseStatCd(UseStatCd useStatCd);
+
+    List<SnUsgmRdsEntity> findByLclRpNmAndLclRpPthAndRmtRpUrlAndRmtRpBrnNmAndUseStatCd(String lclRpNm, String lclRpPath, String rmtRpUrl, String rmtRpBrnNm, UseStatCd useStatCd);
 
 }

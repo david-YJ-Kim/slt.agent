@@ -3,16 +3,23 @@ package com.tsh.slt.spec;
 
 import com.tsh.slt.spec.common.AbsMsgCommonVo;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
 public class FisFileReportVo extends AbsMsgCommonVo {
 
 
     Body body;
 
-    @Data
+    @Getter
+    @Setter
+    @SuperBuilder
     public static class Body {
 
         String siteId;

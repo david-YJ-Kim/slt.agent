@@ -69,7 +69,7 @@ public class SnUsgmRdsService {
                 .fnl_evnt_dt(String.valueOf(Timestamp.from(Instant.now())))
                 
                 // TODO tid 관리 방안
-                .tid("tid")
+                .tid(ivo.getHead().getTid())
                 .build();
 
         log.info(newRecord.toString());

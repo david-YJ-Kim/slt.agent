@@ -31,7 +31,9 @@ public final class ApMessageList {
     // 신규 레코드 등록
     public static final String SRV_USGM_NEW_RECORD = "SRV_USGM_NEW_RECORD";
     // 전체 레코드 가져오기
-    public static final String SRV_USGM_FETCH_ALL = "SRV_USGM_FETCH_ALL";
+    public static final String SRV_USGM_FETCH_REQ = "SRV_USGM_FETCH_REQ";
+    // OI 수신, 조회 오청에 대한 응답
+    public static final String OI_USGM_FETCH_REP = "OI_USGM_FETCH_REP";
     // 특정 레코드 수정
     public static final String SRV_USGM_EDIT_RECORD = "SRV_USGM_EDIT_RECORD";
     // 특정 레코드 삭제
