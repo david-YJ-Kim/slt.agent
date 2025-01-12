@@ -16,6 +16,6 @@ public interface SnUsgmRdsRepository extends JpaRepository<SnUsgmRdsEntity, Stri
      */
     List<SnUsgmRdsEntity> findByUseStatCd(UseStatCd useStatCd);
 
-    List<SnUsgmRdsEntity> findByLclRpNmAndLclRpPthAndRmtRpUrlAndRmtRpBrnNmAndUseStatCd(String lclRpNm, String lclRpPath, String rmtRpUrl, String rmtRpBrnNm, UseStatCd useStatCd);
+    SnUsgmRdsEntity findByLclRpNmAndLclRpPthAndRmtRpUrlAndRmtRpBrnNmAndUseStatCd(String lclRpNm, String lclRpPath, String rmtRpUrl, String rmtRpBrnNm, UseStatCd useStatCd);
 
 }

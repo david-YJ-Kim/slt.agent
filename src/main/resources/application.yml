@@ -127,6 +127,8 @@ ap:
     polling:
       interval:
         ms: 10
+  encryption:
+    key: tK8vP#mX2$nQ9zR5wL7hJ4cF6yA3eD0i
   local:
     active:
       profile: local

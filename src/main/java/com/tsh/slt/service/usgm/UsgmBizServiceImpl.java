@@ -10,13 +10,20 @@ import com.tsh.slt.spec.common.MsgReasonVo;
 import com.tsh.slt.spec.usgm.*;
 import com.tsh.slt.spec.usgm.common.GitUnitRecordVo;
 import com.tsh.slt.util.code.UseStatCd;
-import com.tsh.slt.util.service.SecurityUtilService;
+import com.tsh.slt.util.service.security.SecurityUtilService;
 import com.tsh.slt.util.service.vo.SecurityInfoVo;
 import com.tsh.slt.util.service.vo.SecurityValidateReqVo;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +63,11 @@ public class UsgmBizServiceImpl implements UsgmBizService{
 
         String[] localRepoNameList = {"wm", "lvs", "LogAppender"};
         String[] localRepoPathList = {"C:\\Workspace\\Workflow\\wm",
-                                        "C:\\Workspace\\Workflow\\lvs",
-                                        "C:\\Workspace\\Workflow\\LogAppender"};
+                "C:\\Workspace\\Workflow\\lvs",
+                "C:\\Workspace\\Workflow\\LogAppender"};
         String[] remoteRepoUrlList = {"https://github.com/david-YJ-Kim/wm.git",
-                                        "https://github.com/david-YJ-Kim/wfs.lvs",
-                                        "https://github.com/david-YJ-Kim/AbsLogAppender"};
+                "https://github.com/david-YJ-Kim/wfs.lvs",
+                "https://github.com/david-YJ-Kim/AbsLogAppender"};
         String[] remoteRepoBranchList = {"main", "main", "main"};
 
 
@@ -96,12 +103,12 @@ public class UsgmBizServiceImpl implements UsgmBizService{
         for(SnUsgmRdsEntity entity: fetchedEntities){
             unitRecordVos.add(
                     GitUnitRecordVo.builder()
-                        .objId(entity.getObjId())
-                        .fileName(entity.getLclRpNm())
-                        .localPath(entity.getLclRpPth())
-                        .upstreamUrl(entity.getRmtRpUrl())
-                        .branch(entity.getRmtRpBrnNm())
-                        .build()
+                            .objId(entity.getObjId())
+                            .fileName(entity.getLclRpNm())
+                            .localPath(entity.getLclRpPth())
+                            .upstreamUrl(entity.getRmtRpUrl())
+                            .branch(entity.getRmtRpBrnNm())
+                            .build()
             );
 
         }
@@ -133,9 +140,10 @@ public class UsgmBizServiceImpl implements UsgmBizService{
     public SnUsgmRdsEntity srvUsgmNewRecord(SrvUsgmNewRecordIvo ivo){
 
         SecurityInfoVo securityInfoVo = this.securityUtilService.generateSecurityInfo(ivo.getBody().getGitEmail(),
-                                                                                        ivo.getBody().getGitToken());
+                ivo.getBody().getGitToken(),
+                true);
         SnUsgmRdsEntity entity =  this.snUsgmRdsService.saveNewRecord(ivo, securityInfoVo, true);
-        
+
         // TODO DB 접근 객체 바로 Return 하는 것은 보안 리스크. Return 객체에 대한 고민 필요
         return entity;
     }
@@ -167,20 +175,22 @@ public class UsgmBizServiceImpl implements UsgmBizService{
             entity.setRmtRpUrl(body.getGitRepoUrl());
             entity.setRmtRpBrnNm(body.getGitRepoBranchName());
 
-            boolean validResult = this.securityUtilService.validatePwd(
+            boolean validResult = this.securityUtilService.validateSecurityInfo(
                     SecurityValidateReqVo.builder()
                             .userPwd(body.getGitToken())
                             .userId(body.getUserId())
                             .salt(entity.getSalt())
                             .hashedPwd(entity.getPwdHsh())
-                            .build()
+                            .build(),
+                    true
             );
 
             // 기존 Token과 다르다면, 업데이트
             if(!validResult){
                 SecurityInfoVo securityInfoVo = this.securityUtilService.generateSecurityInfo(
                         entity.getEmail(),
-                        ivo.getBody().getGitToken()
+                        ivo.getBody().getGitToken(),
+                        true
                 );
                 entity.setSalt(securityInfoVo.getSalt());
                 entity.setPwdHsh(securityInfoVo.getHashedPwd());
@@ -275,28 +285,36 @@ public class UsgmBizServiceImpl implements UsgmBizService{
 
     @Override
     public SrvUsgmGitPushIvo srvUsgmGitPush(SrvUsgmGitPushIvo ivo) {
-        return null;
+        try {
+            this.pushLocalStageToRemote(ivo);
+
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("0")
+                            .build()
+            );
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("1")
+                            .reasonComment(e.getMessage())
+                            .build()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("1")
+                            .reasonComment(e.getMessage())
+                            .build()
+            );
+        }
+        return ivo;
     }
 
 
 
-    /**
-     * 테이블 UK로 조회
-     * @param lclRpNm
-     * @param lclRpPath
-     * @param rmtRpUrl
-     * @param rmtRpBrnNm
-     * @return
-     */
-    private List<SnUsgmRdsEntity> findEntityWithUl(String lclRpNm, String lclRpPath, String rmtRpUrl, String rmtRpBrnNm){
-        return this.snUsgmRdsRepository.findByLclRpNmAndLclRpPthAndRmtRpUrlAndRmtRpBrnNmAndUseStatCd(
-                lclRpNm,
-                lclRpPath,
-                rmtRpUrl,
-                rmtRpBrnNm,
-                UseStatCd.Usable
-        );
-    }
 
     /**
      * 현재 등록된 전체 항목에 대해서 푸쉬 진행
@@ -362,84 +380,99 @@ public class UsgmBizServiceImpl implements UsgmBizService{
 
     /**
      * 요청 받은 git을 기준으로 remote 로 push 하고 push 한 remote 개수를 리턴
-     * @param localRepoName
-     * @param remoteRepoUrl
-     * @param remoteRepoBranchName
+     * @param ivo
      * @return
      */
-//    private int pushLocalStageToRemote(String localRepoName, String remoteRepoUrl, String remoteRepoBranchName) throws GitAPIException, IOException {
-//
-//        String username = "david.yj.kim@gmail.com";
-//        String password = "personal_token";
+    private int pushLocalStageToRemote(SrvUsgmGitPushIvo ivo)
+            throws GitAPIException, IOException {
 
-//
-//        UpStreamGitInfoVo upStreamGitInfoVo = this.getRegisteredGitInfo(localRepoName, remoteRepoUrl, remoteRepoBranchName);
-//
-//        String localRepoFilePath = upStreamGitInfoVo.getLocalRepositoryPath();
-//
-//        try {
-//            // 로컬 저장소 열기
-//            Git git = Git.open(new File(localRepoFilePath));
-//
-//
-//            // 원격 저장소로 브랜치 푸시
-//            Iterable<PushResult> pushResults = git.push()
-//                    .setRemote(remoteRepoUrl) // 원격 저장소 URL
-//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)) // 인증
-//                    .setRefSpecs(new RefSpec(remoteRepoBranchName + ":" + remoteRepoBranchName)) // 브랜치 매핑
-//                    .call();
-//
-//            int cnt = 0;
-//            for (PushResult result : pushResults) {
-//                System.out.println("PushResult: " + result.getMessages());
-//                cnt++;
-//            }
-//            return cnt;
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            log.error("Error:{}", e);
-//            throw e;
-//        }
-//
-//    }
+        SrvUsgmGitPushIvo.Body body = ivo.getBody();
+
+        SnUsgmRdsEntity entity = this.snUsgmRdsRepository.findByLclRpNmAndLclRpPthAndRmtRpUrlAndRmtRpBrnNmAndUseStatCd(
+                body.getRepoFileName(),
+                body.getRepoFilePath(),
+                body.getGitRepoUrl(),
+                body.getGitRepoBranchName(),
+                UseStatCd.Usable
+        );
+
+        if(entity == null){
+            // TODO Scenario Exception
+            log.error("Entity is not found.");
+//            throw new Exception("Entity is not found.");
+        }
 
 
-//    public static void main(String[] args) {
-//        // Git 리포지토리 경로
-//        String repoFileName = "wm";
-//        String localRepoPath = "C:\\Workspace\\Workflow\\wm";
-//        // Git 원격 저장소 URL
-//        String remoteRepoUrl = "https://github.com/david-YJ-Kim/wm.git";
-//        // 사용자 인증 정보
-//        String username = "david.yj.kim@gmail.com";
-//        String password = "personal_token";
-//
-//        // 푸시할 브랜치
-//        String branchName = "main";
-//
-//        try {
-//            // 로컬 저장소 열기
-//            Git git = Git.open(new File(localRepoPath));
-//
-//            // 파일 추가 및 커밋
-//            git.add().addFilepattern(".").call(); // 모든 변경된 파일 추가
-//            git.commit().setMessage("Committing changes - UpstreamManager Test").call();
-//
-//            // 원격 저장소로 브랜치 푸시
-//            Iterable<PushResult> pushResults = git.push()
-//                    .setRemote(remoteRepoUrl) // 원격 저장소 URL
-//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)) // 인증
-//                    .setRefSpecs(new RefSpec(branchName + ":" + branchName)) // 브랜치 매핑
-//                    .call();
-//
-//            for (PushResult result : pushResults) {
-//                System.out.println("PushResult: " + result.getMessages());
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+        try {
+            // 로컬 저장소 열기
+            Git git = Git.open(new File(entity.getLclRpPth()));
+
+
+            try{
+                // 원격 저장소로 브랜치 푸시
+                Iterable<PushResult> pushResults = git.push()
+                        .setRemote(entity.getRmtRpUrl()) // 원격 저장소 URL
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
+                                entity.getEmail(),
+                                entity.getPwdHsh())) // 인증
+                        .setRefSpecs(new RefSpec(entity.getRmtRpUrl() + ":" + entity.getRmtRpBrnNm())) // 브랜치 매핑
+                        .call();
+
+                int cnt = 0;
+                for (PushResult result : pushResults) {
+                    System.out.println("PushResult: " + result.getMessages());
+                    cnt++;
+                }
+                return cnt;
+            }catch (Exception e){
+                throw new IllegalArgumentException(e.getMessage());
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Error:{}", e);
+            throw e;
+        }
+
+    }
+
+
+    public static void main(String[] args) {
+        // Git 리포지토리 경로
+        String repoFileName = "slt.agent";
+        String localRepoPath = "C:\\workspace\\slt\\slt.agent";
+        // Git 원격 저장소 URL
+        String remoteRepoUrl = "https://github.com/david-YJ-Kim/slt.agent.git";
+        // 사용자 인증 정보
+        String username = "david.yj.kim@gmail.com";
+        String password = "a";
+
+        // 푸시할 브랜치
+        String branchName = "master";
+
+        try {
+            // 로컬 저장소 열기
+            Git git = Git.open(new File(localRepoPath));
+
+            // 파일 추가 및 커밋
+            git.add().addFilepattern(".").call(); // 모든 변경된 파일 추가
+            git.commit().setMessage("Committing changes - UpstreamManager Test").call();
+
+            // 원격 저장소로 브랜치 푸시
+            Iterable<PushResult> pushResults = git.push()
+                    .setRemote(remoteRepoUrl) // 원격 저장소 URL
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)) // 인증
+                    .setRefSpecs(new RefSpec(branchName + ":" + branchName)) // 브랜치 매핑
+                    .call();
+
+            for (PushResult result : pushResults) {
+                System.out.println("PushResult: " + result.getMessages());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
