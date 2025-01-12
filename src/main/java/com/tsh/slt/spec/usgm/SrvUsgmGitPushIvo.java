@@ -25,6 +25,8 @@ public class SrvUsgmGitPushIvo extends AbsMsgCommonVo {
     @NoArgsConstructor
     public static class Body extends ApMsgBody {
 
+        /* Record 고유 키 */
+        String objId;
         /* 로컬에 저장된 소스 폴더 이름 */
         String repoFileName;
         /* 로컬 소스 폴더 경로 */

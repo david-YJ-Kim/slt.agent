@@ -227,19 +227,57 @@ public class UsgmBizServiceImpl implements UsgmBizService{
     }
 
     @Override
-    public int srvUsgmDeleteRecord(SrvUsgmDeleteRecordIvo ivo) {
-        return 0;
+    public SrvUsgmDeleteRecordIvo srvUsgmDeleteRecord(SrvUsgmDeleteRecordIvo ivo) {
+
+        SrvUsgmDeleteRecordIvo.Body body = ivo.getBody();
+
+        if(body.getObjId() == null || body.getObjId().isEmpty()){
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("1")
+                            .reasonComment("조회 요청에 필수 파라미터가 부족합니다.")
+                            .data(new HashMap<String, String>() {{ put("cnt", "0"); }})
+                            .build()
+            );
+            return ivo;
+        }
+
+        Optional<SnUsgmRdsEntity> optionalEntity = this.snUsgmRdsRepository.findById(body.getObjId());
+        if(optionalEntity.isPresent()){
+            SnUsgmRdsEntity entity = optionalEntity.get();
+            this.snUsgmRdsRepository.delete(entity);
+            log.info("Delete Entity.");
+
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("0")
+                            .build()
+            );
+        }else {
+
+            ivo.getBody().setReason(
+                    MsgReasonVo.builder()
+                            .reasonCode("1")
+                            .reasonComment("대상 record 가 없습니다.")
+                            .build()
+            );
+        }
+
+        return ivo;
+
+
     }
 
     @Override
-    public int srvUsgmGitPull(SrvUsgmGitPullIvo ivo) {
-        return 0;
+    public SrvUsgmGitPullIvo srvUsgmGitPull(SrvUsgmGitPullIvo ivo) {
+        return null;
     }
 
     @Override
-    public int srvUsgmGitPush(SrvUsgmGitPushIvo ivo) {
-        return 0;
+    public SrvUsgmGitPushIvo srvUsgmGitPush(SrvUsgmGitPushIvo ivo) {
+        return null;
     }
+
 
 
     /**

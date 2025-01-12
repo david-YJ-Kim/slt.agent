@@ -39,14 +39,14 @@ public interface UsgmBizService {
      * @param ivo
      * @return
      */
-    int srvUsgmDeleteRecord(SrvUsgmDeleteRecordIvo ivo);
+    SrvUsgmDeleteRecordIvo srvUsgmDeleteRecord(SrvUsgmDeleteRecordIvo ivo);
 
     /**
      * 요청된 Git 에 대해서 Pull 수행
      * @param ivo
      * @return
      */
-    int srvUsgmGitPull(SrvUsgmGitPullIvo ivo);
+    SrvUsgmGitPullIvo srvUsgmGitPull(SrvUsgmGitPullIvo ivo);
 
 
     /**
@@ -54,6 +54,6 @@ public interface UsgmBizService {
      * @param ivo
      * @return
      */
-    int srvUsgmGitPush(SrvUsgmGitPushIvo ivo);
+    SrvUsgmGitPushIvo srvUsgmGitPush(SrvUsgmGitPushIvo ivo);
 }
 
